@@ -35,6 +35,21 @@ A delightful countdown timer that visualizes time as a cute kiwi bird parachutin
 - **Tomorrow 9 AM** - Set up your morning reminder
 - **In 3 days** - Track upcoming events
 
+### URL Parameters (NEW!)
+You can now set the target date directly in the URL - perfect for sharing countdowns!
+
+**Example:**
+```
+index.html?date=6:30am 3rd december
+```
+
+**Supported formats:**
+- Natural language: `6:30am 3rd december`, `december 3 2025 6:30am`
+- ISO 8601: `2025-12-03T06:30:00`
+- Alternative params: `?target=...` or `?time=...`
+
+See [QUICKSTART.md](QUICKSTART.md) for full documentation on URL parameters.
+
 ## Project Structure
 
 ```

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiwi Timer - URL Parameter Examples</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .example {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .example h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .example a {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .example a:hover {
+            background: #5568d3;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 20px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <h1>🥝 Kiwi Timer - URL Parameter Examples</h1>
+
+    <div class="note">
+        <strong>Note:</strong> These examples use dates that will automatically adjust to the current year if they're in the past.
+        For testing, you can modify the dates in the URLs below.
+    </div>
+
+    <div class="example">
+        <h3>Example 1: Your Requested Format</h3>
+        <p><strong>Description:</strong> 6:30 AM on December 3rd</p>
+        <div class="code">?date=6:30am 3rd december</div>
+        <a href="index.html?date=6:30am 3rd december" target="_blank">Try This Example →</a>
+    </div>
+
+    <div class="example">
+        <h3>Example 2: ISO Format</h3>
+        <p><strong>Description:</strong> December 3rd, 2025 at 6:30 AM</p>
+        <div class="code">?date=2025-12-03T06:30:00</div>
+        <a href="index.html?date=2025-12-03T06:30:00" target="_blank">Try This Example →</a>
+    </div>
+
+    <div class="example">
+        <h3>Example 3: Alternative Format</h3>
+        <p><strong>Description:</strong> December 3rd, 6:30 AM</p>
+        <div class="code">?date=december 3 6:30am</div>
+        <a href="index.html?date=december 3 6:30am" target="_blank">Try This Example →</a>
+    </div>
+
+    <div class="example">
+        <h3>Example 4: Short Month Name</h3>
+        <p><strong>Description:</strong> Dec 3rd, 6:30 AM</p>
+        <div class="code">?date=dec 3 6:30am</div>
+        <a href="index.html?date=dec 3 6:30am" target="_blank">Try This Example →</a>
+    </div>
+
+    <div class="example">
+        <h3>Example 5: 24-Hour Time</h3>
+        <p><strong>Description:</strong> December 3rd at 18:30 (6:30 PM)</p>
+        <div class="code">?date=december 3 18:30</div>
+        <a href="index.html?date=december 3 18:30" target="_blank">Try This Example →</a>
+    </div>
+
+    <div class="example">
+        <h3>Example 6: With Year Specified</h3>
+        <p><strong>Description:</strong> December 3rd, 2026 at 6:30 AM</p>
+        <div class="code">?date=6:30am 3rd december 2026</div>
+        <a href="index.html?date=6:30am 3rd december 2026" target="_blank">Try This Example →</a>
+    </div>
+
+    <div class="example">
+        <h3>Example 7: Alternative Parameter Name</h3>
+        <p><strong>Description:</strong> Using "target" instead of "date"</p>
+        <div class="code">?target=6:30am 3rd december</div>
+        <a href="index.html?target=6:30am 3rd december" target="_blank">Try This Example →</a>
+    </div>
+
+    <div class="example">
+        <h3>Example 8: Short Duration (Testing)</h3>
+        <p><strong>Description:</strong> 5 minutes from now (dynamic)</p>
+        <div class="code">Use the preset button instead</div>
+        <a href="index.html" target="_blank">Open App & Use "5 minutes" Preset →</a>
+    </div>
+
+    <div class="note">
+        <strong>💡 Pro Tip:</strong> You can share these URLs with anyone! They'll see the kiwi counting down to your specified date and time.
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="index.html" style="display: inline-block; background: white; color: #667eea; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            ← Back to Kiwi Timer
+        </a>
+    </div>
+</body>
+</html>

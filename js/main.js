@@ -22,7 +22,16 @@ class KiwiTimerApp {
 
     init() {
         this.setupEventListeners();
-        this.loadSavedTimer();
+
+        // Check for URL parameters first, before loading saved timer
+        const urlDate = this.parseURLParameters();
+        if (urlDate) {
+            this.targetDateTimeInput.value = formatDateTimeLocal(urlDate);
+            this.startTimer();
+        } else {
+            this.loadSavedTimer();
+        }
+
         this.setupQuickPresets();
 
         // Start render loop
@@ -43,6 +52,138 @@ class KiwiTimerApp {
         const defaultDate = new Date();
         defaultDate.setMinutes(defaultDate.getMinutes() + 5);
         this.targetDateTimeInput.value = formatDateTimeLocal(defaultDate);
+    }
+
+    parseURLParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Support multiple parameter names for flexibility
+        const dateParam = urlParams.get('date') || urlParams.get('target') || urlParams.get('time');
+
+        if (!dateParam) {
+            return null;
+        }
+
+        try {
+            // Try parsing as ISO date first
+            let targetDate = new Date(dateParam);
+
+            // If ISO parsing fails, try custom formats
+            if (isNaN(targetDate.getTime())) {
+                targetDate = this.parseCustomDateFormat(dateParam);
+            }
+
+            // Validate the date
+            if (isNaN(targetDate.getTime())) {
+                console.error('Invalid date in URL parameter:', dateParam);
+                return null;
+            }
+
+            // Check if date is in the future
+            if (targetDate <= new Date()) {
+                console.error('Date in URL parameter is in the past:', dateParam);
+                return null;
+            }
+
+            return targetDate;
+        } catch (error) {
+            console.error('Error parsing date from URL:', error);
+            return null;
+        }
+    }
+
+    parseCustomDateFormat(dateString) {
+        // Handle natural language dates
+        // Examples: "6:30am 3rd december", "december 3 6:30am", "2025-12-03 06:30"
+
+        const now = new Date();
+        let year = now.getFullYear();
+        let month = null;
+        let day = null;
+        let hours = null;
+        let minutes = 0;
+
+        // Month names mapping
+        const monthNames = {
+            'january': 0, 'jan': 0,
+            'february': 1, 'feb': 1,
+            'march': 2, 'mar': 2,
+            'april': 3, 'apr': 3,
+            'may': 4,
+            'june': 5, 'jun': 5,
+            'july': 6, 'jul': 6,
+            'august': 7, 'aug': 7,
+            'september': 8, 'sep': 8, 'sept': 8,
+            'october': 9, 'oct': 9,
+            'november': 10, 'nov': 10,
+            'december': 11, 'dec': 11
+        };
+
+        // Normalize the string
+        const normalized = dateString.toLowerCase().replace(/[,]/g, ' ').trim();
+
+        // Extract month
+        for (const [name, index] of Object.entries(monthNames)) {
+            if (normalized.includes(name)) {
+                month = index;
+                break;
+            }
+        }
+
+        // Extract day (look for numbers 1-31, possibly with st/nd/rd/th)
+        const dayMatch = normalized.match(/\b(\d{1,2})(st|nd|rd|th)?\b/);
+        if (dayMatch) {
+            const dayNum = parseInt(dayMatch[1]);
+            if (dayNum >= 1 && dayNum <= 31) {
+                day = dayNum;
+            }
+        }
+
+        // Extract time (formats: 6:30am, 06:30, 6:30, 18:30)
+        const timeMatch = normalized.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/);
+        if (timeMatch) {
+            hours = parseInt(timeMatch[1]);
+            minutes = parseInt(timeMatch[2]);
+
+            // Handle AM/PM
+            const meridiem = timeMatch[3];
+            if (meridiem === 'pm' && hours < 12) {
+                hours += 12;
+            } else if (meridiem === 'am' && hours === 12) {
+                hours = 0;
+            }
+        }
+
+        // Extract year if present (4 digit number)
+        const yearMatch = normalized.match(/\b(20\d{2})\b/);
+        if (yearMatch) {
+            year = parseInt(yearMatch[1]);
+        }
+
+        // If we have at least month or day or time, try to construct a date
+        if (month !== null || day !== null || hours !== null) {
+            const targetDate = new Date(now);
+
+            if (month !== null) targetDate.setMonth(month);
+            if (day !== null) targetDate.setDate(day);
+            if (hours !== null) {
+                targetDate.setHours(hours);
+                targetDate.setMinutes(minutes);
+                targetDate.setSeconds(0);
+                targetDate.setMilliseconds(0);
+            }
+            if (yearMatch) targetDate.setFullYear(year);
+
+            // If the constructed date is in the past, assume next year
+            if (targetDate <= now && !yearMatch) {
+                targetDate.setFullYear(targetDate.getFullYear() + 1);
+            }
+
+            return targetDate;
+        }
+
+        // If all else fails, return invalid date
+        return new Date('invalid');
     }
 
     setupQuickPresets() {

@@ -29,6 +29,89 @@ npx serve
 3. **Click** "Start Countdown"
 4. **Watch** the kiwi parachute down!
 
+## 🔗 Share Countdowns with URL Parameters
+
+You can set the target date directly in the URL! Perfect for sharing countdowns with others.
+
+### Basic Format
+```
+index.html?date=YOUR_DATE_HERE
+```
+
+### Examples
+
+**Natural language format** (your example):
+```
+index.html?date=6:30am 3rd december
+```
+
+**ISO format**:
+```
+index.html?date=2025-12-03T06:30:00
+```
+
+**More natural formats**:
+```
+index.html?date=december 3 2025 6:30am
+index.html?date=3rd dec 6:30am
+index.html?date=dec 3 6:30am
+index.html?date=2025-12-03 06:30
+```
+
+**Alternative parameter names**:
+```
+index.html?target=6:30am 3rd december
+index.html?time=6:30am 3rd december
+```
+
+### Supported Date Formats
+
+✅ **Natural language**:
+- `6:30am 3rd december`
+- `december 3rd 6:30am`
+- `3rd dec 2025 6:30am`
+
+✅ **ISO 8601**:
+- `2025-12-03T06:30:00`
+- `2025-12-03 06:30`
+
+✅ **Flexible time formats**:
+- `6:30am` / `6:30pm`
+- `06:30` (24-hour)
+- `18:30` (24-hour)
+
+✅ **Month names** (full or abbreviated):
+- january/jan, february/feb, march/mar, etc.
+
+✅ **Ordinal days**:
+- 1st, 2nd, 3rd, 4th, 5th, etc.
+
+### URL Encoding Tips
+
+For special characters, URL-encode spaces:
+```
+index.html?date=6:30am%203rd%20december
+```
+
+Or your browser will do it automatically when you share the link!
+
+### Share Your Countdown
+
+1. Set your target date in the URL
+2. Copy the full URL
+3. Share with anyone!
+4. They'll see the kiwi counting down to your event
+
+**Example for a meeting**:
+```
+http://localhost:8000?date=2:30pm%20today
+```
+
+**Example for a birthday**:
+```
+http://localhost:8000?date=march%2015%202026%209:00am
+```
+
 ## ⚡ Quick Tips
 
 ### Set a Custom Time

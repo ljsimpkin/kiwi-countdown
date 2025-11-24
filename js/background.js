@@ -11,16 +11,8 @@ class Cloud {
     }
 
     update(deltaTime, canvasWidth, canvasHeight, totalDuration, scrollOffset) {
-        // Scale cloud speed based on timer duration
-        let speedMultiplier = 1;
-        if (totalDuration > 86400000) {
-            speedMultiplier = 0.3; // Very slow for multi-day timers
-        } else if (totalDuration > 3600000) {
-            speedMultiplier = 0.6; // Slower for hour+ timers
-        }
-
-        // Clouds drift horizontally slowly
-        this.x += (this.speed * speedMultiplier * deltaTime) / 3000; // Slower horizontal drift
+        // Clouds drift horizontally slowly (no speed multiplier - always same speed)
+        this.x += (this.speed * deltaTime) / 3000;
 
         // Wrap around horizontally
         if (this.x > canvasWidth + 100) {
@@ -32,7 +24,7 @@ class Cloud {
         // Update vertical position based on scroll offset
         // Different layers scroll at different speeds (parallax)
         // NEGATIVE to make clouds scroll UP (bottom to top) as kiwi falls
-        const parallaxFactor = this.speed / 25; // Clouds with higher speed scroll faster
+        const parallaxFactor = this.speed / 15; // Clouds with higher speed scroll faster
         this.y = this.initialY - (scrollOffset * parallaxFactor);
     }
 
@@ -61,33 +53,59 @@ class Background {
     constructor(canvas) {
         this.canvas = canvas;
         this.clouds = [];
-        this.scrollOffset = 0; // Vertical scroll position
-        this.maxScroll = 10000; // Maximum scroll distance
+        this.scrollOffset = 0; // Vertical scroll position (accumulated over time)
+        this.scrollSpeed = 0.05; // Pixels per millisecond - constant speed!
+        this.maxScroll = 20000; // Maximum scroll for ground positioning
         this.initClouds();
     }
 
     initClouds() {
-        // Create multiple clouds distributed vertically
+        // Create MANY more clouds distributed vertically for longer timers
         // Start with clouds BELOW the viewport so they scroll UP into view
         const cloudData = [
-            // Layer 1 (far - slow) - start far below
-            { x: 100, y: 500, scale: 0.7, speed: 10 },
-            { x: 300, y: 800, scale: 0.8, speed: 12 },
-            { x: 500, y: 1200, scale: 0.75, speed: 11 },
-
-            // Layer 2 (medium)
-            { x: 150, y: 600, scale: 1.0, speed: 20 },
-            { x: 400, y: 900, scale: 0.9, speed: 18 },
-            { x: 600, y: 1100, scale: 0.95, speed: 19 },
-
-            // Layer 3 (near - fast)
-            { x: 200, y: 700, scale: 1.2, speed: 30 },
-            { x: 450, y: 1000, scale: 1.1, speed: 28 },
-            { x: 650, y: 1300, scale: 1.15, speed: 29 },
-
             // Initial visible clouds (near start)
             { x: 250, y: 100, scale: 0.9, speed: 15 },
             { x: 550, y: 150, scale: 1.0, speed: 22 },
+            { x: 100, y: 200, scale: 0.85, speed: 18 },
+
+            // Layer 1 (far - slow) - distributed throughout journey
+            { x: 100, y: 500, scale: 0.7, speed: 10 },
+            { x: 300, y: 800, scale: 0.8, speed: 12 },
+            { x: 500, y: 1200, scale: 0.75, speed: 11 },
+            { x: 200, y: 1600, scale: 0.7, speed: 10 },
+            { x: 400, y: 2000, scale: 0.8, speed: 12 },
+            { x: 600, y: 2400, scale: 0.75, speed: 11 },
+            { x: 150, y: 2800, scale: 0.7, speed: 10 },
+            { x: 350, y: 3200, scale: 0.8, speed: 12 },
+
+            // Layer 2 (medium) - more clouds for longer timers
+            { x: 150, y: 600, scale: 1.0, speed: 20 },
+            { x: 400, y: 900, scale: 0.9, speed: 18 },
+            { x: 600, y: 1100, scale: 0.95, speed: 19 },
+            { x: 250, y: 1400, scale: 1.0, speed: 20 },
+            { x: 450, y: 1800, scale: 0.9, speed: 18 },
+            { x: 650, y: 2200, scale: 0.95, speed: 19 },
+            { x: 200, y: 2600, scale: 1.0, speed: 20 },
+            { x: 500, y: 3000, scale: 0.9, speed: 18 },
+            { x: 700, y: 3400, scale: 0.95, speed: 19 },
+
+            // Layer 3 (near - fast) - most visible and dynamic
+            { x: 200, y: 700, scale: 1.2, speed: 30 },
+            { x: 450, y: 1000, scale: 1.1, speed: 28 },
+            { x: 650, y: 1300, scale: 1.15, speed: 29 },
+            { x: 300, y: 1500, scale: 1.2, speed: 30 },
+            { x: 550, y: 1900, scale: 1.1, speed: 28 },
+            { x: 100, y: 2300, scale: 1.15, speed: 29 },
+            { x: 400, y: 2700, scale: 1.2, speed: 30 },
+            { x: 600, y: 3100, scale: 1.1, speed: 28 },
+            { x: 250, y: 3500, scale: 1.15, speed: 29 },
+
+            // Extra clouds for very long timers
+            { x: 180, y: 3800, scale: 0.8, speed: 15 },
+            { x: 380, y: 4200, scale: 1.0, speed: 22 },
+            { x: 580, y: 4600, scale: 0.9, speed: 18 },
+            { x: 120, y: 5000, scale: 1.1, speed: 25 },
+            { x: 420, y: 5400, scale: 0.85, speed: 20 },
         ];
 
         cloudData.forEach((data) => {
@@ -97,9 +115,18 @@ class Background {
         });
     }
 
+    reset() {
+        // Reset scroll offset when starting a new timer
+        this.scrollOffset = 0;
+    }
+
     update(deltaTime, totalDuration, percentComplete) {
-        // Update scroll offset based on progress
-        this.scrollOffset = percentComplete * this.maxScroll;
+        // Accumulate scroll at constant speed (not based on percentComplete!)
+        // This makes clouds scroll smoothly regardless of timer duration
+        this.scrollOffset += this.scrollSpeed * deltaTime;
+
+        // Cap at maxScroll so we don't scroll forever
+        this.scrollOffset = Math.min(this.scrollOffset, this.maxScroll);
 
         this.clouds.forEach(cloud => {
             cloud.update(deltaTime, this.canvas.width, this.canvas.height, totalDuration, this.scrollOffset);

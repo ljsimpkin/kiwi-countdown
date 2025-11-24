@@ -4,9 +4,12 @@ class Kiwi {
     constructor(canvas) {
         this.canvas = canvas;
 
+        // Get the actual display dimensions (not scaled by DPR)
+        const rect = canvas.getBoundingClientRect();
+
         // Kiwi stays centered vertically and horizontally
-        this.centerY = canvas.height / 2;
-        this.x = canvas.width / 2;
+        this.centerY = rect.height / 2;
+        this.x = rect.width / 2;
         this.y = this.centerY;
 
         // Animation properties
@@ -31,13 +34,16 @@ class Kiwi {
             return;
         }
 
+        // Get current display dimensions
+        const rect = this.canvas.getBoundingClientRect();
+
         // Kiwi stays centered vertically - no Y position change
         this.y = this.centerY;
 
         // Update sway animation (horizontal movement)
         this.swayOffset += this.swaySpeed * deltaTime;
         const swayX = Math.sin(this.swayOffset) * this.swayAmplitude;
-        this.x = (this.canvas.width / 2) + swayX;
+        this.x = (rect.width / 2) + swayX;
 
         // Slight rotation based on sway
         this.rotation = Math.sin(this.swayOffset) * 0.05;

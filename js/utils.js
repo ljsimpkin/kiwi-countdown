@@ -31,9 +31,7 @@ function formatDateTimeLocal(date) {
 }
 
 // Get adaptive frame rate based on time remaining
+// For smooth animation, we now render at 60 FPS always
 function getUpdateFrequency(timeRemaining) {
-    if (timeRemaining < 60000) return 60;        // < 1 min: 60 FPS
-    if (timeRemaining < 3600000) return 10;      // < 1 hour: 10 FPS
-    if (timeRemaining < 86400000) return 2;      // < 1 day: 2 FPS
-    return 1;                                     // > 1 day: 1 FPS
+    return 60; // Always 60 FPS for smooth scrolling animation
 }

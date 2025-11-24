@@ -91,10 +91,12 @@ Instead of the kiwi falling down the screen, imagine the kiwi is actually descen
 
 **Cloud Scrolling:**
 - Each cloud has an initial Y position (starting below viewport)
-- As `percentComplete` increases, clouds scroll upward (bottom to top)
+- Clouds scroll upward at **constant speed** (bottom to top) - not based on timer duration!
 - Simulates kiwi falling downward through the sky
+- **36+ clouds** distributed throughout the descent for continuous motion
 - Parallax effect: Faster clouds = closer = scroll more
 - Formula: `y = initialY - (scrollOffset * parallaxFactor)` (negative for upward)
+- **Smooth & steady:** 0.05 pixels per millisecond regardless of countdown length
 
 **Ground Scrolling:**
 - Starts off-screen at bottom
@@ -105,15 +107,17 @@ Instead of the kiwi falling down the screen, imagine the kiwi is actually descen
 
 ### Parallax Layers
 
-Three cloud layers with different scroll speeds:
+Three cloud layers with different scroll speeds (36+ total clouds):
 
-| Layer | Speed | Distance | Parallax Factor | Effect |
-|-------|-------|----------|-----------------|--------|
-| Far | 10-12 | Background | 0.4-0.48 | Scrolls slowly |
-| Medium | 18-22 | Mid-ground | 0.72-0.88 | Moderate scroll |
-| Near | 28-30 | Foreground | 1.12-1.20 | Scrolls quickly |
+| Layer | Speed | Distance | Parallax Factor | Effect | Count |
+|-------|-------|----------|-----------------|--------|-------|
+| Far | 10-12 | Background | 0.67-0.80 | Scrolls slowly | ~11 clouds |
+| Medium | 18-22 | Mid-ground | 1.20-1.47 | Moderate scroll | ~12 clouds |
+| Near | 28-30 | Foreground | 1.87-2.00 | Scrolls quickly | ~13 clouds |
 
-This creates a sense of depth and 3D space!
+**Note:** Parallax factor increased by ~67% (15 instead of 25) for more dramatic motion!
+
+This creates a strong sense of depth and 3D space!
 
 ---
 

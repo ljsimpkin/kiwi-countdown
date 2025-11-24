@@ -6,7 +6,11 @@
 - **Complete animation overhaul** - Changed from descending kiwi to vertical scrolling
 - **Kiwi now stays centered** - Fixed position in middle of screen (both horizontally and vertically)
 - **Background scrolls vertically** - World moves past the kiwi instead of kiwi moving through world
+- **Constant scroll speed** - Clouds scroll at steady rate regardless of timer duration (0.05px/ms)
 - **Parallax cloud scrolling** - Different cloud layers scroll at different speeds for depth
+- **Increased cloud count** - 36+ clouds (up from 11) distributed throughout descent
+- **Faster cloud scrolling** - Parallax speed increased by 67% for more dramatic motion
+- **Extended scroll distance** - MaxScroll increased from 10,000 to 20,000 for longer journeys
 - **Ground scrolls into view** - Approaches from bottom as timer progresses
 - **Landing animation updated** - Kiwi bounces in place at center instead of at bottom
 - **Camera-following effect** - Creates more immersive descent experience

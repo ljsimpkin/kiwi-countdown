@@ -150,21 +150,29 @@ class Kiwi {
     land() {
         this.isLanded = true;
         this.landingProgress = 0;
+        this.danceTime = 0;
         // Kiwi stays centered even when landed
         this.y = this.centerY;
     }
 
     updateLanding(deltaTime) {
-        if (this.landingProgress < 1) {
-            this.landingProgress += deltaTime / 1000;
+        this.landingProgress += deltaTime / 1000;
 
-            // Bounce effect - small bounce in place
-            if (this.landingProgress < 0.3) {
-                const bounceT = this.landingProgress / 0.3;
-                this.landingBounce = Math.sin(bounceT * Math.PI) * -10;
-            } else {
-                this.landingBounce = 0;
-            }
+        // Initial bounce effect
+        if (this.landingProgress < 0.3) {
+            const bounceT = this.landingProgress / 0.3;
+            this.landingBounce = Math.sin(bounceT * Math.PI) * -10;
+        } else {
+            this.landingBounce = 0;
+
+            // After bounce, start dancing!
+            this.danceTime += deltaTime;
+
+            // Dance moves: BIGGER bounce up and down (faster and higher!)
+            this.landingBounce = Math.sin(this.danceTime * 0.012) * 15;
+
+            // Dance rotation: BIGGER wiggle left and right
+            this.rotation = Math.sin(this.danceTime * 0.015) * 0.25;
         }
     }
 

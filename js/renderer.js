@@ -11,6 +11,7 @@ class Renderer {
         this.parachute = new Parachute();
         this.foodManager = new FoodManager(canvas);
         this.scoreManager = new ScoreManager();
+        this.kiwiFriends = null; // Created when landing
 
         this.lastFrameTime = performance.now();
         this.isLanding = false;
@@ -95,6 +96,11 @@ class Renderer {
         const attachPoint = this.kiwi.getAttachmentPoint();
         this.parachute.draw(this.ctx, attachPoint);
 
+        // Draw kiwi friends (behind main kiwi)
+        if (this.kiwiFriends) {
+            this.kiwiFriends.draw(this.ctx);
+        }
+
         // Draw kiwi
         this.kiwi.draw(this.ctx);
 
@@ -109,12 +115,29 @@ class Renderer {
         this.kiwi.land();
         this.parachute.collapse();
         this.landingMessageAlpha = 0;
+
+        // Create kiwi friends immediately!
+        setTimeout(() => {
+            if (!this.kiwiFriends) {
+                this.kiwiFriends = new KiwiFriendsManager(
+                    this.canvas,
+                    this.kiwi.x,
+                    this.kiwi.y
+                );
+                this.kiwiFriends.activate();
+            }
+        }, 100); // Reduced delay - friends appear faster!
     }
 
     updateLanding(deltaTime) {
         // Fade in landing message
         if (this.landingMessageAlpha < 1) {
             this.landingMessageAlpha += deltaTime / 1000;
+        }
+
+        // Update kiwi friends
+        if (this.kiwiFriends) {
+            this.kiwiFriends.update(deltaTime, this.kiwi.landingProgress);
         }
     }
 

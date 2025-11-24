@@ -142,19 +142,31 @@ class KiwiTimerApp {
         // Remove any existing timezone info from the string
         const cleanDateString = dateString.replace(/[+-]\d{2}:\d{2}$|Z$/, '');
 
-        // Create date object treating the input as being in the target timezone
-        const localDate = new Date(cleanDateString);
+        // Parse the date string - this will be interpreted as local time
+        const parts = cleanDateString.match(/(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2}))?/);
 
-        // Get the local timezone offset in minutes
-        const localOffsetMinutes = localDate.getTimezoneOffset();
+        if (!parts) {
+            // Fallback to standard Date parsing
+            return new Date(cleanDateString);
+        }
 
-        // Calculate the target timezone offset in minutes
-        const targetOffsetMinutes = -offsetHours * 60; // Negative because we want to convert TO UTC
+        const year = parseInt(parts[1]);
+        const month = parseInt(parts[2]) - 1; // Months are 0-indexed
+        const day = parseInt(parts[3]);
+        const hour = parseInt(parts[4]);
+        const minute = parseInt(parts[5]);
+        const second = parts[6] ? parseInt(parts[6]) : 0;
 
-        // Adjust the date: we need to add the difference between local and target timezones
-        const adjustmentMinutes = localOffsetMinutes - targetOffsetMinutes;
+        // Create a UTC date from the components
+        // This represents the time in the TARGET timezone
+        const utcDate = Date.UTC(year, month, day, hour, minute, second);
 
-        return new Date(localDate.getTime() + adjustmentMinutes * 60000);
+        // Convert from target timezone to UTC by subtracting the offset
+        // offsetHours is positive for GMT+X, so we subtract to get UTC
+        const utcTime = utcDate - (offsetHours * 3600000);
+
+        // Return as a local Date object (will display in user's local timezone)
+        return new Date(utcTime);
     }
 
     parseCustomDateFormat(dateString) {

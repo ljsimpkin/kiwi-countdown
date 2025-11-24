@@ -42,17 +42,14 @@ class Food {
         }
     }
 
-    update(deltaTime, scrollOffset) {
+    update(deltaTime) {
         if (this.collected) return;
 
         // Bobbing animation
         this.bobOffset += this.bobSpeed * deltaTime;
 
-        // Update Y position based on scroll offset (scroll upward like clouds)
-        // Only apply scrolling if scrollOffset is significant (timer is running)
-        if (scrollOffset > 10) {
-            this.y = this.initialY - scrollOffset;
-        }
+        // Food floats upward faster toward the kiwi (from bottom to top)
+        this.y -= 0.08 * deltaTime; // Faster upward movement
     }
 
     draw(ctx) {
@@ -132,23 +129,23 @@ class FoodManager {
         }
     }
 
-    update(deltaTime, scrollOffset) {
+    update(deltaTime) {
         // Update spawn timer
         this.spawnTimer += deltaTime;
 
         // Spawn new food if needed
         if (this.spawnTimer >= this.spawnInterval && this.foods.length < this.maxFoods) {
-            this.spawnFood(scrollOffset);
+            this.spawnFood();
             this.spawnTimer = 0;
         }
 
-        // Update all foods with scroll offset
-        this.foods.forEach(food => food.update(deltaTime, scrollOffset));
+        // Update all foods
+        this.foods.forEach(food => food.update(deltaTime));
 
         // Remove collected foods
         this.foods = this.foods.filter(food => !food.collected);
 
-        // Remove foods that are off screen (scrolled past)
+        // Remove foods that are off screen
         const rect = this.canvas.getBoundingClientRect();
         this.foods = this.foods.filter(food => {
             // Keep food if it's within reasonable bounds
@@ -156,21 +153,14 @@ class FoodManager {
         });
     }
 
-    spawnFood(scrollOffset) {
+    spawnFood() {
         const rect = this.canvas.getBoundingClientRect();
 
         // Random X position with some padding from edges
         const x = 50 + Math.random() * (rect.width - 100);
 
-        let y;
-        if (scrollOffset > 10) {
-            // Timer is running - spawn ahead of scroll position
-            const spawnDistance = rect.height + 100 + Math.random() * 300;
-            y = scrollOffset + spawnDistance;
-        } else {
-            // No timer - spawn at random positions in viewport
-            y = 80 + Math.random() * (rect.height - 160);
-        }
+        // Spawn below viewport (off-screen)
+        const y = rect.height + 50 + Math.random() * 100; // Below bottom edge
 
         // Random food type (weighted distribution)
         const rand = Math.random();

@@ -60,10 +60,9 @@ class Renderer {
         this.parachute.update(deltaTime);
 
         // Update food manager
-        this.foodManager.update(deltaTime, this.background.scrollOffset);
+        this.foodManager.update(deltaTime);
 
         // Check for food collisions
-        const kiwiPos = this.kiwi.getAttachmentPoint();
         const pointsEarned = this.foodManager.checkCollisions(
             this.kiwi.x,
             this.kiwi.y,

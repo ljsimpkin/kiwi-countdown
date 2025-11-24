@@ -303,8 +303,13 @@ class KiwiTimerApp {
                 this.lastUpdateTime = currentTime;
             }
         } else if (!this.timer) {
-            // Draw static scene when no timer
-            this.renderer.draw(0, 0, false);
+            // Update and draw scene even when no timer (for food spawning, kiwi movement, etc.)
+            const frameInterval = 1000 / 60; // 60 FPS
+            if (currentTime - this.lastUpdateTime >= frameInterval) {
+                this.renderer.update(0, 0, false);
+                this.renderer.draw(0, 0, false);
+                this.lastUpdateTime = currentTime;
+            }
         }
 
         this.animationFrameId = requestAnimationFrame(() => this.animate());

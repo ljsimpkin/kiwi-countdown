@@ -14,11 +14,12 @@ A delightful countdown timer that visualizes time as a cute kiwi bird parachutin
 - ⚡ **Performance optimized** - Adaptive frame rate based on countdown duration
 
 ### Visual Elements
-- Animated kiwi bird with swaying motion
+- **Vertical scrolling animation** - Kiwi stays centered while the world scrolls past
+- Animated kiwi bird with swaying motion (fixed at center)
 - Billowing parachute canopy
-- Multiple cloud layers moving at different speeds
-- Grass ground with decorative details
-- Landing animation with bounce effect
+- Multiple cloud layers with vertical parallax scrolling
+- Ground that scrolls into view as time progresses
+- Landing animation with bounce effect (in place)
 - Celebration message when time's up
 
 ## How to Use

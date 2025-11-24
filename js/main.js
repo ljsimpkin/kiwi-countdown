@@ -304,7 +304,7 @@ class KiwiTimerApp {
             }
         } else if (!this.timer) {
             // Draw static scene when no timer
-            this.renderer.draw(0);
+            this.renderer.draw(0, 0, false);
         }
 
         this.animationFrameId = requestAnimationFrame(() => this.animate());
@@ -322,7 +322,7 @@ class KiwiTimerApp {
 
         // Update and draw renderer
         this.renderer.update(percentComplete, this.timer.getTotalDuration(), isComplete);
-        this.renderer.draw(this.timer.getTotalDuration());
+        this.renderer.draw(this.timer.getTotalDuration(), percentComplete, isComplete);
 
         // Handle completion
         if (isComplete && !this.renderer.isLandingComplete()) {

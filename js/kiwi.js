@@ -3,10 +3,11 @@
 class Kiwi {
     constructor(canvas) {
         this.canvas = canvas;
-        this.topY = 80;
-        this.bottomY = canvas.height - 120;
+
+        // Kiwi stays centered vertically and horizontally
+        this.centerY = canvas.height / 2;
         this.x = canvas.width / 2;
-        this.y = this.topY;
+        this.y = this.centerY;
 
         // Animation properties
         this.swayOffset = 0;
@@ -30,11 +31,10 @@ class Kiwi {
             return;
         }
 
-        // Calculate Y position with easing
-        const easedPercent = easeInQuad(percentComplete);
-        this.y = lerp(this.topY, this.bottomY, easedPercent);
+        // Kiwi stays centered vertically - no Y position change
+        this.y = this.centerY;
 
-        // Update sway animation
+        // Update sway animation (horizontal movement)
         this.swayOffset += this.swaySpeed * deltaTime;
         const swayX = Math.sin(this.swayOffset) * this.swayAmplitude;
         this.x = (this.canvas.width / 2) + swayX;
@@ -46,17 +46,18 @@ class Kiwi {
     land() {
         this.isLanded = true;
         this.landingProgress = 0;
-        this.y = this.bottomY;
+        // Kiwi stays centered even when landed
+        this.y = this.centerY;
     }
 
     updateLanding(deltaTime) {
         if (this.landingProgress < 1) {
             this.landingProgress += deltaTime / 1000;
 
-            // Bounce effect
+            // Bounce effect - small bounce in place
             if (this.landingProgress < 0.3) {
                 const bounceT = this.landingProgress / 0.3;
-                this.landingBounce = Math.sin(bounceT * Math.PI) * -20;
+                this.landingBounce = Math.sin(bounceT * Math.PI) * -10;
             } else {
                 this.landingBounce = 0;
             }

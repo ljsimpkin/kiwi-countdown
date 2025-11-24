@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.2.0] - Vertical Scrolling Animation
+
+### Changed
+- **Complete animation overhaul** - Changed from descending kiwi to vertical scrolling
+- **Kiwi now stays centered** - Fixed position in middle of screen (both horizontally and vertically)
+- **Background scrolls vertically** - World moves past the kiwi instead of kiwi moving through world
+- **Parallax cloud scrolling** - Different cloud layers scroll at different speeds for depth
+- **Ground scrolls into view** - Approaches from bottom as timer progresses
+- **Landing animation updated** - Kiwi bounces in place at center instead of at bottom
+- **Camera-following effect** - Creates more immersive descent experience
+
+### Technical Details
+- Modified [kiwi.js](js/kiwi.js) - Kiwi Y position fixed to `canvas.height / 2`
+- Rewrote [background.js](js/background.js) - Added scroll offset and parallax system
+- Updated [renderer.js](js/renderer.js) - Passes percentComplete for scrolling calculations
+- Updated [main.js](js/main.js) - Passes additional parameters to renderer
+
+### Documentation
+- Added [VERTICAL_SCROLLING.md](VERTICAL_SCROLLING.md) - Complete guide to new animation system
+- Updated [README.md](README.md) - Reflect vertical scrolling in visual elements
+
+### Benefits
+- Better visual continuity (kiwi always visible)
+- More immersive camera-tracking effect
+- Improved mobile experience (centered focus)
+- Scalable for any countdown duration
+- Enhanced parallax depth perception
+
+---
+
 ## [1.1.0] - URL Parameters Feature
 
 ### Added

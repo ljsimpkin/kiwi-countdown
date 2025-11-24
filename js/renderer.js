@@ -44,8 +44,8 @@ class Renderer {
         const deltaTime = currentTime - this.lastFrameTime;
         this.lastFrameTime = currentTime;
 
-        // Update background
-        this.background.update(deltaTime, totalDuration);
+        // Update background with percentComplete for scrolling
+        this.background.update(deltaTime, totalDuration, percentComplete);
 
         // Update kiwi position
         this.kiwi.updatePosition(percentComplete, deltaTime);
@@ -63,11 +63,11 @@ class Renderer {
         }
     }
 
-    draw(totalDuration) {
+    draw(totalDuration, percentComplete, isComplete) {
         this.clear();
 
-        // Draw background
-        this.background.draw(this.ctx, totalDuration);
+        // Draw background with percentComplete and isComplete for ground positioning
+        this.background.draw(this.ctx, totalDuration, percentComplete, isComplete);
 
         // Draw parachute (behind kiwi)
         const attachPoint = this.kiwi.getAttachmentPoint();

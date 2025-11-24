@@ -1,15 +1,16 @@
-// Background with sky, clouds, and ground
+// Background with sky, clouds, and ground - Vertical scrolling
 
 class Cloud {
     constructor(x, y, scale, speed) {
         this.x = x;
+        this.initialY = y; // Store initial Y position
         this.y = y;
         this.scale = scale;
         this.speed = speed;
         this.baseSpeed = speed;
     }
 
-    update(deltaTime, canvasWidth, totalDuration) {
+    update(deltaTime, canvasWidth, canvasHeight, totalDuration, scrollOffset) {
         // Scale cloud speed based on timer duration
         let speedMultiplier = 1;
         if (totalDuration > 86400000) {
@@ -18,29 +19,40 @@ class Cloud {
             speedMultiplier = 0.6; // Slower for hour+ timers
         }
 
-        this.x += (this.speed * speedMultiplier * deltaTime) / 1000;
+        // Clouds drift horizontally slowly
+        this.x += (this.speed * speedMultiplier * deltaTime) / 3000; // Slower horizontal drift
 
-        // Wrap around
+        // Wrap around horizontally
         if (this.x > canvasWidth + 100) {
             this.x = -100;
+        } else if (this.x < -100) {
+            this.x = canvasWidth + 100;
         }
+
+        // Update vertical position based on scroll offset
+        // Different layers scroll at different speeds (parallax)
+        const parallaxFactor = this.speed / 25; // Clouds with higher speed scroll faster
+        this.y = this.initialY + (scrollOffset * parallaxFactor);
     }
 
-    draw(ctx) {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.scale(this.scale, this.scale);
+    draw(ctx, canvasHeight) {
+        // Only draw if cloud is visible
+        if (this.y > -100 && this.y < canvasHeight + 100) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.scale(this.scale, this.scale);
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
 
-        // Draw cloud as overlapping circles
-        ctx.beginPath();
-        ctx.arc(-20, 0, 15, 0, Math.PI * 2);
-        ctx.arc(0, -5, 20, 0, Math.PI * 2);
-        ctx.arc(20, 0, 15, 0, Math.PI * 2);
-        ctx.fill();
+            // Draw cloud as overlapping circles
+            ctx.beginPath();
+            ctx.arc(-20, 0, 15, 0, Math.PI * 2);
+            ctx.arc(0, -5, 20, 0, Math.PI * 2);
+            ctx.arc(20, 0, 15, 0, Math.PI * 2);
+            ctx.fill();
 
-        ctx.restore();
+            ctx.restore();
+        }
     }
 }
 
@@ -48,28 +60,48 @@ class Background {
     constructor(canvas) {
         this.canvas = canvas;
         this.clouds = [];
+        this.scrollOffset = 0; // Vertical scroll position
+        this.maxScroll = 10000; // Maximum scroll distance
         this.initClouds();
     }
 
     initClouds() {
-        // Create 5 clouds at different positions and layers
+        // Create multiple clouds distributed vertically
+        // Start with clouds above the viewport so they scroll into view
         const cloudData = [
-            { y: 100, scale: 0.8, speed: 15 },
-            { y: 150, scale: 1.2, speed: 25 },
-            { y: 200, scale: 0.9, speed: 20 },
-            { y: 120, scale: 1.0, speed: 30 },
-            { y: 180, scale: 1.1, speed: 18 }
+            // Layer 1 (far - slow)
+            { x: 100, y: -500, scale: 0.7, speed: 10 },
+            { x: 300, y: -200, scale: 0.8, speed: 12 },
+            { x: 500, y: -800, scale: 0.75, speed: 11 },
+
+            // Layer 2 (medium)
+            { x: 150, y: -300, scale: 1.0, speed: 20 },
+            { x: 400, y: -600, scale: 0.9, speed: 18 },
+            { x: 600, y: -100, scale: 0.95, speed: 19 },
+
+            // Layer 3 (near - fast)
+            { x: 200, y: -400, scale: 1.2, speed: 30 },
+            { x: 450, y: -700, scale: 1.1, speed: 28 },
+            { x: 650, y: -900, scale: 1.15, speed: 29 },
+
+            // Initial visible clouds
+            { x: 250, y: 100, scale: 0.9, speed: 15 },
+            { x: 550, y: 150, scale: 1.0, speed: 22 },
         ];
 
-        cloudData.forEach((data, index) => {
-            const x = (this.canvas.width / cloudData.length) * index + Math.random() * 100;
+        cloudData.forEach((data) => {
+            // Wrap X position if it's out of bounds
+            let x = data.x % this.canvas.width;
             this.clouds.push(new Cloud(x, data.y, data.scale, data.speed));
         });
     }
 
-    update(deltaTime, totalDuration) {
+    update(deltaTime, totalDuration, percentComplete) {
+        // Update scroll offset based on progress
+        this.scrollOffset = percentComplete * this.maxScroll;
+
         this.clouds.forEach(cloud => {
-            cloud.update(deltaTime, this.canvas.width, totalDuration);
+            cloud.update(deltaTime, this.canvas.width, this.canvas.height, totalDuration, this.scrollOffset);
         });
     }
 
@@ -85,49 +117,64 @@ class Background {
     }
 
     drawClouds(ctx) {
-        // Sort clouds by speed (slower = further back)
+        // Sort clouds by their vertical position and speed (further = slower)
         const sortedClouds = [...this.clouds].sort((a, b) => a.speed - b.speed);
-        sortedClouds.forEach(cloud => cloud.draw(ctx));
+        sortedClouds.forEach(cloud => cloud.draw(ctx, this.canvas.height));
     }
 
-    drawGround(ctx) {
-        const groundY = this.canvas.height - 80;
+    drawGround(ctx, percentComplete, isComplete) {
+        // Ground scrolls in from bottom and eventually fills the screen
+        const groundStartY = this.canvas.height; // Start off screen
+        const groundEndY = 0; // End at top (fully visible when landed)
 
-        // Ground - grass
-        ctx.fillStyle = '#7CB342';
-        ctx.fillRect(0, groundY, this.canvas.width, 80);
+        // Ground Y position based on progress
+        let groundY = groundStartY - (percentComplete * (groundStartY - groundEndY));
 
-        // Ground details - darker grass patches
-        ctx.fillStyle = '#689F38';
-        ctx.beginPath();
-        for (let x = 0; x < this.canvas.width; x += 40) {
-            ctx.ellipse(x, groundY + 10, 20, 8, 0, 0, Math.PI * 2);
+        // When complete, ground is at bottom of kiwi (center-ish)
+        if (isComplete) {
+            groundY = this.canvas.height / 2 + 50; // Just below center
         }
-        ctx.fill();
 
-        // Ground line
-        ctx.strokeStyle = '#558B2F';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(0, groundY);
-        ctx.lineTo(this.canvas.width, groundY);
-        ctx.stroke();
+        // Only draw if ground is visible
+        if (groundY < this.canvas.height) {
+            const groundHeight = this.canvas.height - groundY + 100; // Extend below viewport
 
-        // Simple hills in background
-        ctx.fillStyle = '#8BC34A';
-        ctx.beginPath();
-        ctx.moveTo(0, groundY);
-        ctx.quadraticCurveTo(this.canvas.width / 4, groundY - 40, this.canvas.width / 2, groundY);
-        ctx.quadraticCurveTo(3 * this.canvas.width / 4, groundY + 20, this.canvas.width, groundY - 20);
-        ctx.lineTo(this.canvas.width, this.canvas.height);
-        ctx.lineTo(0, this.canvas.height);
-        ctx.closePath();
-        ctx.fill();
+            // Ground - grass
+            ctx.fillStyle = '#7CB342';
+            ctx.fillRect(0, groundY, this.canvas.width, groundHeight);
+
+            // Ground details - darker grass patches
+            ctx.fillStyle = '#689F38';
+            ctx.beginPath();
+            for (let x = 0; x < this.canvas.width; x += 40) {
+                ctx.ellipse(x, groundY + 10, 20, 8, 0, 0, Math.PI * 2);
+            }
+            ctx.fill();
+
+            // Ground line
+            ctx.strokeStyle = '#558B2F';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(this.canvas.width, groundY);
+            ctx.stroke();
+
+            // Simple hills in background
+            ctx.fillStyle = '#8BC34A';
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.quadraticCurveTo(this.canvas.width / 4, groundY - 40, this.canvas.width / 2, groundY);
+            ctx.quadraticCurveTo(3 * this.canvas.width / 4, groundY + 20, this.canvas.width, groundY - 20);
+            ctx.lineTo(this.canvas.width, this.canvas.height + 100);
+            ctx.lineTo(0, this.canvas.height + 100);
+            ctx.closePath();
+            ctx.fill();
+        }
     }
 
-    draw(ctx, totalDuration) {
+    draw(ctx, totalDuration, percentComplete, isComplete) {
         this.drawSky(ctx);
         this.drawClouds(ctx);
-        this.drawGround(ctx);
+        this.drawGround(ctx, percentComplete, isComplete);
     }
 }

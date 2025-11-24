@@ -9,8 +9,13 @@ class Kiwi {
 
         // Kiwi stays centered vertically and horizontally
         this.centerY = rect.height / 2;
-        this.x = rect.width / 2;
+        this.centerX = rect.width / 2;
+        this.x = this.centerX;
         this.y = this.centerY;
+
+        // User-controlled horizontal offset
+        this.userOffsetX = 0;
+        this.moveSpeed = 0.3; // Pixels per millisecond
 
         // Animation properties
         this.swayOffset = 0;
@@ -26,6 +31,37 @@ class Kiwi {
         this.isLanded = false;
         this.landingBounce = 0;
         this.landingProgress = 0;
+
+        // Keyboard state
+        this.keys = {
+            left: false,
+            right: false
+        };
+
+        // Setup keyboard listeners
+        this.setupKeyboardControls();
+    }
+
+    setupKeyboardControls() {
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                this.keys.left = true;
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight') {
+                this.keys.right = true;
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft') {
+                this.keys.left = false;
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight') {
+                this.keys.right = false;
+                e.preventDefault();
+            }
+        });
     }
 
     updatePosition(percentComplete, deltaTime = 16) {
@@ -40,10 +76,24 @@ class Kiwi {
         // Kiwi stays centered vertically - no Y position change
         this.y = this.centerY;
 
+        // Handle keyboard input for horizontal movement
+        if (this.keys.left) {
+            this.userOffsetX -= this.moveSpeed * deltaTime;
+        }
+        if (this.keys.right) {
+            this.userOffsetX += this.moveSpeed * deltaTime;
+        }
+
+        // Clamp user offset to keep kiwi on screen
+        const maxOffset = rect.width / 2 - 50; // 50px padding from edges
+        this.userOffsetX = Math.max(-maxOffset, Math.min(maxOffset, this.userOffsetX));
+
         // Update sway animation (horizontal movement)
         this.swayOffset += this.swaySpeed * deltaTime;
         const swayX = Math.sin(this.swayOffset) * this.swayAmplitude;
-        this.x = (rect.width / 2) + swayX;
+
+        // Combine center position, user offset, and sway
+        this.x = this.centerX + this.userOffsetX + swayX;
 
         // Slight rotation based on sway
         this.rotation = Math.sin(this.swayOffset) * 0.05;

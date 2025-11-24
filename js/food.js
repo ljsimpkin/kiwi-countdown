@@ -107,6 +107,25 @@ class FoodManager {
         this.spawnTimer = 0;
         this.spawnInterval = 3000; // Spawn food every 3 seconds
         this.maxFoods = 8; // Maximum food items on screen
+
+        // Spawn initial food for testing
+        console.log('FoodManager initialized');
+        this.spawnInitialFood();
+    }
+
+    spawnInitialFood() {
+        // Spawn a few test foods at visible positions
+        const rect = this.canvas.getBoundingClientRect();
+        console.log('Canvas dimensions:', rect.width, rect.height);
+
+        // Spawn foods at various Y positions to test visibility
+        for (let i = 0; i < 3; i++) {
+            const x = rect.width / 2 + (i - 1) * 100;
+            const y = rect.height / 4 + i * 100;
+            const food = new Food(x, y, i === 0 ? 'berry' : i === 1 ? 'worm' : 'apple');
+            this.foods.push(food);
+            console.log(`Initial test food ${i}: x=${x}, y=${y}`);
+        }
     }
 
     update(deltaTime, scrollOffset) {
@@ -156,10 +175,16 @@ class FoodManager {
             type = 'apple'; // 10% chance
         }
 
-        this.foods.push(new Food(x, y, type));
+        const food = new Food(x, y, type);
+        this.foods.push(food);
+        console.log(`Spawned ${type} at x:${x.toFixed(0)}, initialY:${y.toFixed(0)}, scrollOffset:${scrollOffset.toFixed(0)}, foods:${this.foods.length}`);
     }
 
     draw(ctx) {
+        // Debug: Draw once per second instead of every frame
+        if (this.foods.length > 0 && Math.random() < 0.016) {
+            console.log(`Drawing ${this.foods.length} foods. First food Y: ${this.foods[0].y.toFixed(0)}`);
+        }
         this.foods.forEach(food => food.draw(ctx));
     }
 

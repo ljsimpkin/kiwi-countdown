@@ -204,6 +204,7 @@
 - [ ] Sound effects
 - [ ] Weather transitions
 - [ ] Day/night cycle
+- [ ] Confetti particles
 - [ ] Kea antagonist
 - [ ] Parachute damage
 - [ ] Multiple countdowns
@@ -211,7 +212,6 @@
 - [ ] Custom themes
 - [ ] Notifications API
 - [ ] Easter eggs
-- [ ] Confetti particles
 - [ ] Screenshot/export
 
 ## Conclusion

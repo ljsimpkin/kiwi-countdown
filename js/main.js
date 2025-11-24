@@ -8,6 +8,9 @@ class KiwiTimerApp {
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
         this.resetBtn = document.getElementById('resetBtn');
+        this.toggleSoundBtn = document.getElementById('toggleSoundBtn');
+        this.toggleWeatherBtn = document.getElementById('toggleWeatherBtn');
+        this.toggleDayNightBtn = document.getElementById('toggleDayNightBtn');
 
         this.renderer = new Renderer(this.canvas);
         this.timer = null;
@@ -16,6 +19,8 @@ class KiwiTimerApp {
 
         this.lastUpdateTime = 0;
         this.targetFrameRate = 60;
+
+        this.dayNightEnabled = true;
 
         this.init();
     }
@@ -42,6 +47,11 @@ class KiwiTimerApp {
         this.startBtn.addEventListener('click', () => this.startTimer());
         this.pauseBtn.addEventListener('click', () => this.togglePause());
         this.resetBtn.addEventListener('click', () => this.resetTimer());
+
+        // Feature toggle buttons
+        this.toggleSoundBtn.addEventListener('click', () => this.toggleSound());
+        this.toggleWeatherBtn.addEventListener('click', () => this.cycleWeather());
+        this.toggleDayNightBtn.addEventListener('click', () => this.toggleDayNight());
 
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -312,6 +322,42 @@ class KiwiTimerApp {
         const defaultDate = new Date();
         defaultDate.setMinutes(defaultDate.getMinutes() + 5);
         this.targetDateTimeInput.value = formatDateTimeLocal(defaultDate);
+    }
+
+    toggleSound() {
+        const isEnabled = this.renderer.soundManager.toggle();
+        this.toggleSoundBtn.dataset.active = isEnabled.toString();
+        this.toggleSoundBtn.textContent = isEnabled ? '🔊 Sound ON' : '🔇 Sound OFF';
+    }
+
+    cycleWeather() {
+        const weatherTypes = ['clear', 'rain', 'snow'];
+        const currentWeather = this.renderer.weatherManager.currentWeather;
+        const currentIndex = weatherTypes.indexOf(currentWeather);
+        const nextIndex = (currentIndex + 1) % weatherTypes.length;
+        const nextWeather = weatherTypes[nextIndex];
+
+        this.renderer.weatherManager.setWeather(nextWeather);
+
+        // Update button text
+        const weatherEmojis = { clear: '☀️', rain: '🌧️', snow: '❄️' };
+        const weatherNames = { clear: 'Clear', rain: 'Rain', snow: 'Snow' };
+        this.toggleWeatherBtn.textContent = `${weatherEmojis[nextWeather]} ${weatherNames[nextWeather]}`;
+    }
+
+    toggleDayNight() {
+        this.dayNightEnabled = !this.dayNightEnabled;
+        this.toggleDayNightBtn.dataset.active = this.dayNightEnabled.toString();
+        this.toggleDayNightBtn.textContent = this.dayNightEnabled ? '☀️ Day/Night ON' : '🌙 Day/Night OFF';
+
+        if (!this.dayNightEnabled) {
+            // Reset to noon (daytime)
+            this.renderer.background.timeOfDay = 0.5;
+            this.renderer.background.cycleSpeed = 0;
+        } else {
+            // Re-enable cycle
+            this.renderer.background.cycleSpeed = 0.00001;
+        }
     }
 
     animate() {

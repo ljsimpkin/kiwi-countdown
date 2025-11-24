@@ -57,6 +57,11 @@ class Background {
         this.scrollSpeed = 0.05; // Pixels per millisecond - constant speed!
         this.maxScroll = 20000; // Maximum scroll for ground positioning
         this.landedGroundY = null; // Store ground position when landing
+
+        // Day/night cycle
+        this.timeOfDay = 0.5; // 0 = midnight, 0.5 = noon, 1 = midnight
+        this.cycleSpeed = 0.00001; // Very slow cycle
+
         this.initClouds();
     }
 
@@ -120,6 +125,7 @@ class Background {
         // Reset scroll offset and ground position when starting a new timer
         this.scrollOffset = 0;
         this.landedGroundY = null;
+        this.timeOfDay = 0.5; // Reset to noon
     }
 
     update(deltaTime, totalDuration, percentComplete) {
@@ -130,20 +136,114 @@ class Background {
         // Cap at maxScroll so we don't scroll forever
         this.scrollOffset = Math.min(this.scrollOffset, this.maxScroll);
 
+        // Update day/night cycle
+        this.timeOfDay += this.cycleSpeed * deltaTime;
+        this.timeOfDay = this.timeOfDay % 1; // Keep between 0 and 1
+
         this.clouds.forEach(cloud => {
             cloud.update(deltaTime, this.canvas.width, this.canvas.height, totalDuration, this.scrollOffset);
         });
     }
 
     drawSky(ctx) {
-        // Sky gradient - light blue at top to lighter at bottom
+        // Day/night cycle with smooth color transitions
+        // timeOfDay: 0 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk, 1 = midnight
+
+        let topColor, midColor, bottomColor;
+
+        if (this.timeOfDay < 0.25) {
+            // Night to dawn (0 to 0.25)
+            const t = this.timeOfDay / 0.25;
+            topColor = this.lerpColor('#0B1929', '#FF6B35', t);
+            midColor = this.lerpColor('#1B2A3D', '#FFA07A', t);
+            bottomColor = this.lerpColor('#2B3E50', '#FFD6A5', t);
+        } else if (this.timeOfDay < 0.5) {
+            // Dawn to noon (0.25 to 0.5)
+            const t = (this.timeOfDay - 0.25) / 0.25;
+            topColor = this.lerpColor('#FF6B35', '#87CEEB', t);
+            midColor = this.lerpColor('#FFA07A', '#B0D4E8', t);
+            bottomColor = this.lerpColor('#FFD6A5', '#E0F2F7', t);
+        } else if (this.timeOfDay < 0.75) {
+            // Noon to dusk (0.5 to 0.75)
+            const t = (this.timeOfDay - 0.5) / 0.25;
+            topColor = this.lerpColor('#87CEEB', '#FF6B6B', t);
+            midColor = this.lerpColor('#B0D4E8', '#FF8C42', t);
+            bottomColor = this.lerpColor('#E0F2F7', '#FFB84D', t);
+        } else {
+            // Dusk to night (0.75 to 1)
+            const t = (this.timeOfDay - 0.75) / 0.25;
+            topColor = this.lerpColor('#FF6B6B', '#0B1929', t);
+            midColor = this.lerpColor('#FF8C42', '#1B2A3D', t);
+            bottomColor = this.lerpColor('#FFB84D', '#2B3E50', t);
+        }
+
         const gradient = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        gradient.addColorStop(0, '#87CEEB');
-        gradient.addColorStop(0.5, '#B0D4E8');
-        gradient.addColorStop(1, '#E0F2F7');
+        gradient.addColorStop(0, topColor);
+        gradient.addColorStop(0.5, midColor);
+        gradient.addColorStop(1, bottomColor);
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Add stars at night (timeOfDay < 0.2 or > 0.8)
+        if (this.timeOfDay < 0.2 || this.timeOfDay > 0.8) {
+            const starOpacity = this.timeOfDay < 0.2
+                ? (0.2 - this.timeOfDay) / 0.2
+                : (this.timeOfDay - 0.8) / 0.2;
+            this.drawStars(ctx, starOpacity);
+        }
+    }
+
+    lerpColor(color1, color2, t) {
+        // Linear interpolation between two hex colors
+        const r1 = parseInt(color1.substr(1, 2), 16);
+        const g1 = parseInt(color1.substr(3, 2), 16);
+        const b1 = parseInt(color1.substr(5, 2), 16);
+
+        const r2 = parseInt(color2.substr(1, 2), 16);
+        const g2 = parseInt(color2.substr(3, 2), 16);
+        const b2 = parseInt(color2.substr(5, 2), 16);
+
+        const r = Math.round(r1 + (r2 - r1) * t);
+        const g = Math.round(g1 + (g2 - g1) * t);
+        const b = Math.round(b1 + (b2 - b1) * t);
+
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    drawStars(ctx, opacity) {
+        // Draw simple stars (fixed positions based on canvas dimensions)
+        ctx.save();
+        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+        const starPositions = [
+            { x: 50, y: 30 }, { x: 120, y: 60 }, { x: 200, y: 40 },
+            { x: 280, y: 70 }, { x: 350, y: 50 }, { x: 450, y: 80 },
+            { x: 550, y: 35 }, { x: 620, y: 65 }, { x: 700, y: 45 },
+            { x: 100, y: 120 }, { x: 300, y: 110 }, { x: 500, y: 130 },
+            { x: 650, y: 100 }, { x: 150, y: 150 }, { x: 400, y: 160 }
+        ];
+
+        starPositions.forEach(star => {
+            // Draw star as small circle
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Add twinkle effect
+            if (Math.random() > 0.7) {
+                ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.5})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(star.x - 4, star.y);
+                ctx.lineTo(star.x + 4, star.y);
+                ctx.moveTo(star.x, star.y - 4);
+                ctx.lineTo(star.x, star.y + 4);
+                ctx.stroke();
+            }
+        });
+
+        ctx.restore();
     }
 
     drawClouds(ctx) {

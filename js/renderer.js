@@ -12,6 +12,9 @@ class Renderer {
         this.foodManager = new FoodManager(canvas);
         this.scoreManager = new ScoreManager();
         this.kiwiFriends = null; // Created when landing
+        this.soundManager = new SoundManager();
+        this.weatherManager = new WeatherManager(canvas);
+        this.confettiManager = new ConfettiManager(canvas);
 
         this.lastFrameTime = performance.now();
         this.isLanding = false;
@@ -39,6 +42,8 @@ class Renderer {
         this.background = new Background(this.canvas);
         this.kiwi = new Kiwi(this.canvas);
         this.foodManager = new FoodManager(this.canvas);
+        this.weatherManager = new WeatherManager(this.canvas);
+        this.confettiManager = new ConfettiManager(this.canvas);
     }
 
     clear() {
@@ -53,6 +58,9 @@ class Renderer {
 
         // Update background with percentComplete for scrolling
         this.background.update(deltaTime, totalDuration, percentComplete);
+
+        // Update weather
+        this.weatherManager.update(deltaTime);
 
         // Update kiwi position
         this.kiwi.updatePosition(percentComplete, deltaTime);
@@ -71,6 +79,7 @@ class Renderer {
         );
         if (pointsEarned > 0) {
             this.scoreManager.addPoints(pointsEarned);
+            this.soundManager.play('foodCollect');
         }
 
         // Handle landing
@@ -81,6 +90,11 @@ class Renderer {
         if (this.isLanding) {
             this.updateLanding(deltaTime);
         }
+
+        // Update confetti
+        if (this.confettiManager.active) {
+            this.confettiManager.update(deltaTime, this.kiwi.x, this.kiwi.y);
+        }
     }
 
     draw(totalDuration, percentComplete, isComplete) {
@@ -88,6 +102,9 @@ class Renderer {
 
         // Draw background with percentComplete and isComplete for ground positioning
         this.background.draw(this.ctx, totalDuration, percentComplete, isComplete);
+
+        // Draw weather effects (behind everything else)
+        this.weatherManager.draw(this.ctx);
 
         // Draw food items
         this.foodManager.draw(this.ctx);
@@ -104,6 +121,9 @@ class Renderer {
         // Draw kiwi
         this.kiwi.draw(this.ctx);
 
+        // Draw confetti (on top of everything)
+        this.confettiManager.draw(this.ctx);
+
         // Draw landing message
         if (this.isLanding && this.landingMessageAlpha > 0) {
             this.drawLandingMessage();
@@ -115,6 +135,17 @@ class Renderer {
         this.kiwi.land();
         this.parachute.collapse();
         this.landingMessageAlpha = 0;
+
+        // Play landing sound
+        this.soundManager.play('landing');
+
+        // Start confetti immediately
+        this.confettiManager.activate(this.kiwi.x, this.kiwi.y);
+
+        // Play complete sound after short delay
+        setTimeout(() => {
+            this.soundManager.play('complete');
+        }, 300);
 
         // Create kiwi friends immediately!
         setTimeout(() => {

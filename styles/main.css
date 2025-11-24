@@ -218,6 +218,34 @@ header h1 {
 .action-buttons {
     display: flex;
     gap: 10px;
+    margin-bottom: 20px;
+}
+
+.feature-controls {
+    padding-top: 15px;
+    border-top: 2px solid #e9ecef;
+}
+
+.feature-controls p {
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #666;
+}
+
+.btn-feature {
+    transition: all 0.3s ease;
+}
+
+.btn-feature[data-active="true"] {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.btn-feature[data-active="false"] {
+    background: #f8f9fa;
+    color: #999;
+    border-color: #ddd;
 }
 
 @media (max-width: 768px) {

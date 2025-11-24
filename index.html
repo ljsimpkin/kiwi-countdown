@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Kiwi Parachute Drop - Countdown Timer</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>>] Kiwi Parachute Drop</h1>
+            <p class="subtitle">Watch the kiwi descend as time counts down</p>
+        </header>
+
+        <div class="canvas-wrapper">
+            <canvas id="kiwiCanvas"></canvas>
+            <div id="timeDisplay" class="time-display">--</div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="targetDateTime">Set Target Date & Time:</label>
+                <input type="datetime-local" id="targetDateTime" />
+                <button id="startBtn" class="btn btn-primary">Start Countdown</button>
+            </div>
+
+            <div class="quick-actions">
+                <p>Quick presets:</p>
+                <button class="btn btn-small" data-minutes="5">5 minutes</button>
+                <button class="btn btn-small" data-minutes="60">1 hour</button>
+                <button class="btn btn-small" data-hours="24">Tomorrow 9 AM</button>
+                <button class="btn btn-small" data-days="3">In 3 days</button>
+            </div>
+
+            <div class="action-buttons">
+                <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
+                <button id="resetBtn" class="btn btn-secondary">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/timeFormatter.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/kiwi.js"></script>
+    <script src="js/parachute.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

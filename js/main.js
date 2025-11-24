@@ -172,11 +172,18 @@ class KiwiTimerApp {
                 targetDate.setSeconds(0);
                 targetDate.setMilliseconds(0);
             }
-            if (yearMatch) targetDate.setFullYear(year);
 
-            // If the constructed date is in the past, assume next year
-            if (targetDate <= now && !yearMatch) {
-                targetDate.setFullYear(targetDate.getFullYear() + 1);
+            // If year was explicitly provided, use it
+            if (yearMatch) {
+                targetDate.setFullYear(year);
+            } else {
+                // No year specified - use current year first
+                targetDate.setFullYear(now.getFullYear());
+
+                // Only advance to next year if the date is already past
+                if (targetDate <= now) {
+                    targetDate.setFullYear(targetDate.getFullYear() + 1);
+                }
             }
 
             return targetDate;

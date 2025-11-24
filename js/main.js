@@ -69,14 +69,31 @@ class KiwiTimerApp {
 
         // Support multiple parameter names for flexibility
         const dateParam = urlParams.get('date') || urlParams.get('target') || urlParams.get('time');
+        const timezoneParam = urlParams.get('timezone') || urlParams.get('tz');
 
         if (!dateParam) {
             return null;
         }
 
         try {
-            // Try parsing as ISO date first
-            let targetDate = new Date(dateParam);
+            let targetDate;
+
+            // Check if timezone parameter is provided
+            if (timezoneParam) {
+                // Parse the date string and apply timezone offset
+                targetDate = this.parseDateWithTimezone(dateParam, timezoneParam);
+            } else {
+                // Check if dateParam already has timezone info (ends with Z or +/-HH:MM)
+                const hasTimezone = /[+-]\d{2}:\d{2}$|Z$/.test(dateParam);
+
+                if (hasTimezone) {
+                    // Parse as ISO with timezone
+                    targetDate = new Date(dateParam);
+                } else {
+                    // No timezone specified - treat as local time
+                    targetDate = new Date(dateParam);
+                }
+            }
 
             // If ISO parsing fails, try custom formats
             if (isNaN(targetDate.getTime())) {
@@ -100,6 +117,44 @@ class KiwiTimerApp {
             console.error('Error parsing date from URL:', error);
             return null;
         }
+    }
+
+    parseDateWithTimezone(dateString, timezone) {
+        // Parse timezone parameter (can be like "GMT+13", "+13", "13", "Pacific/Auckland")
+        let offsetHours = 0;
+
+        // Handle common timezone formats
+        if (timezone.toLowerCase().includes('gmt')) {
+            // GMT+13 or GMT-5
+            const match = timezone.match(/gmt([+-]?\d+)/i);
+            if (match) {
+                offsetHours = parseInt(match[1]);
+            }
+        } else if (timezone.match(/^[+-]?\d+$/)) {
+            // Just a number like "+13" or "13" or "-5"
+            offsetHours = parseInt(timezone);
+        } else {
+            // IANA timezone name like "Pacific/Auckland" - not supported yet
+            console.warn('IANA timezone names not supported, treating as UTC');
+        }
+
+        // Parse the date string as if it's in the specified timezone
+        // Remove any existing timezone info from the string
+        const cleanDateString = dateString.replace(/[+-]\d{2}:\d{2}$|Z$/, '');
+
+        // Create date object treating the input as being in the target timezone
+        const localDate = new Date(cleanDateString);
+
+        // Get the local timezone offset in minutes
+        const localOffsetMinutes = localDate.getTimezoneOffset();
+
+        // Calculate the target timezone offset in minutes
+        const targetOffsetMinutes = -offsetHours * 60; // Negative because we want to convert TO UTC
+
+        // Adjust the date: we need to add the difference between local and target timezones
+        const adjustmentMinutes = localOffsetMinutes - targetOffsetMinutes;
+
+        return new Date(localDate.getTime() + adjustmentMinutes * 60000);
     }
 
     parseCustomDateFormat(dateString) {

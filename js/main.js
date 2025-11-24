@@ -191,23 +191,41 @@ class KiwiTimerApp {
 
         presetButtons.forEach(btn => {
             btn.addEventListener('click', () => {
+                const seconds = btn.dataset.seconds;
                 const minutes = btn.dataset.minutes;
                 const hours = btn.dataset.hours;
                 const days = btn.dataset.days;
 
                 const targetDate = new Date();
 
-                if (minutes) {
+                if (seconds) {
+                    // For seconds-based timers, bypass the datetime input and start directly
+                    targetDate.setSeconds(targetDate.getSeconds() + parseInt(seconds));
+                    this.timer = new CountdownTimer(targetDate);
+                    this.isRunning = true;
+                    this.pauseBtn.disabled = false;
+                    this.startBtn.textContent = 'Restart';
+
+                    // Reset renderer
+                    this.renderer = new Renderer(this.canvas);
+
+                    // Save to storage
+                    Storage.save(targetDate);
+
+                    // Update input display (even though it will lose seconds precision)
+                    this.targetDateTimeInput.value = formatDateTimeLocal(targetDate);
+                } else if (minutes) {
                     targetDate.setMinutes(targetDate.getMinutes() + parseInt(minutes));
+                    this.targetDateTimeInput.value = formatDateTimeLocal(targetDate);
                 } else if (hours) {
                     // "Tomorrow 9 AM"
                     targetDate.setDate(targetDate.getDate() + 1);
                     targetDate.setHours(9, 0, 0, 0);
+                    this.targetDateTimeInput.value = formatDateTimeLocal(targetDate);
                 } else if (days) {
                     targetDate.setDate(targetDate.getDate() + parseInt(days));
+                    this.targetDateTimeInput.value = formatDateTimeLocal(targetDate);
                 }
-
-                this.targetDateTimeInput.value = formatDateTimeLocal(targetDate);
             });
         });
     }

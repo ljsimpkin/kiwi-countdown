@@ -38,8 +38,9 @@ class Kiwi {
             right: false
         };
 
-        // Setup keyboard listeners
+        // Setup keyboard and touch listeners
         this.setupKeyboardControls();
+        this.setupTouchControls();
     }
 
     setupKeyboardControls() {
@@ -62,6 +63,53 @@ class Kiwi {
                 e.preventDefault();
             }
         });
+    }
+
+    setupTouchControls() {
+        // Handle both mouse and touch events
+        const handleStart = (e) => {
+            e.preventDefault();
+
+            // Get canvas bounding rect
+            const rect = this.canvas.getBoundingClientRect();
+
+            // Get touch/click position
+            let clientX;
+            if (e.type === 'touchstart') {
+                clientX = e.touches[0].clientX;
+            } else {
+                clientX = e.clientX;
+            }
+
+            // Calculate position relative to canvas
+            const x = clientX - rect.left;
+            const centerX = rect.width / 2;
+
+            // Left half = move left, right half = move right
+            if (x < centerX) {
+                this.keys.left = true;
+                this.keys.right = false;
+            } else {
+                this.keys.right = true;
+                this.keys.left = false;
+            }
+        };
+
+        const handleEnd = (e) => {
+            e.preventDefault();
+            this.keys.left = false;
+            this.keys.right = false;
+        };
+
+        // Mouse events
+        this.canvas.addEventListener('mousedown', handleStart);
+        this.canvas.addEventListener('mouseup', handleEnd);
+        this.canvas.addEventListener('mouseleave', handleEnd);
+
+        // Touch events
+        this.canvas.addEventListener('touchstart', handleStart, { passive: false });
+        this.canvas.addEventListener('touchend', handleEnd, { passive: false });
+        this.canvas.addEventListener('touchcancel', handleEnd, { passive: false });
     }
 
     updatePosition(percentComplete, deltaTime = 16) {

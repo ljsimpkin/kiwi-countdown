@@ -15,6 +15,7 @@ class Renderer {
         this.soundManager = new SoundManager();
         this.weatherManager = new WeatherManager(canvas);
         this.confettiManager = new ConfettiManager(canvas);
+        this.keaManager = new KeaManager(canvas);
 
         this.lastFrameTime = performance.now();
         this.isLanding = false;
@@ -44,6 +45,7 @@ class Renderer {
         this.foodManager = new FoodManager(this.canvas);
         this.weatherManager = new WeatherManager(this.canvas);
         this.confettiManager = new ConfettiManager(this.canvas);
+        this.keaManager = new KeaManager(this.canvas);
     }
 
     clear() {
@@ -70,6 +72,18 @@ class Renderer {
 
         // Update food manager
         this.foodManager.update(deltaTime);
+
+        // Update kea manager (keas try to steal food!)
+        if (!isComplete) {
+            this.keaManager.update(
+                deltaTime,
+                this.foodManager.foods,
+                this.kiwi.x,
+                this.kiwi.y,
+                percentComplete,
+                () => this.scoreManager.incrementStolen()
+            );
+        }
 
         // Check for food collisions
         const pointsEarned = this.foodManager.checkCollisions(
@@ -108,6 +122,9 @@ class Renderer {
 
         // Draw food items
         this.foodManager.draw(this.ctx);
+
+        // Draw keas (antagonists that steal food)
+        this.keaManager.draw(this.ctx);
 
         // Draw parachute (behind kiwi)
         const attachPoint = this.kiwi.getAttachmentPoint();
@@ -200,7 +217,7 @@ class Renderer {
         this.ctx.textBaseline = 'middle';
 
         this.ctx.font = 'bold 32px sans-serif';
-        this.ctx.fillText("Time's Up!", centerX, centerY - 15);
+        this.ctx.fillText("Time's up!", centerX, centerY - 15);
 
         this.ctx.font = '20px sans-serif';
         this.ctx.fillText('🎉 The kiwi has landed! 🎉', centerX, centerY + 20);

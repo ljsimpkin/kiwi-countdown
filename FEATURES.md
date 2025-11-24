@@ -61,7 +61,7 @@ When you first open the application:
 1. **Kiwi lands** - Smooth bounce on ground
 2. **Parachute collapses** - Folds behind kiwi
 3. **Feet appear** - Orange feet touch ground
-4. **Message displays** - White box with "Time's Up! 🎉 The kiwi has landed! 🎉"
+4. **Message displays** - White box with "Time's up! 🎉 The kiwi has landed! 🎉"
 5. **Countdown stops** - Time display shows "Time's up!"
 
 ### Interactive Controls

@@ -283,6 +283,9 @@ class KiwiTimerApp {
         // Reset renderer
         this.renderer = new Renderer(this.canvas);
 
+        // Activate kea antagonists
+        this.renderer.keaManager.activate();
+
         // Save to storage
         Storage.save(targetDate);
     }

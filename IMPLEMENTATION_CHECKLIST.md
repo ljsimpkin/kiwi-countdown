@@ -54,7 +54,7 @@
 - [x] Landing animation when timer reaches zero
 - [x] Kiwi bounce effect
 - [x] Parachute collapses
-- [x] "Time's Up!" celebration message
+- [x] "Time's up!" celebration message
 - [x] Smooth transition to landed state
 - [x] Clear visual feedback
 

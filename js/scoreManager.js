@@ -4,8 +4,10 @@ class ScoreManager {
     constructor() {
         this.currentScore = 0;
         this.highScore = this.loadHighScore();
+        this.foodsStolen = 0;
         this.scoreElement = null;
         this.highScoreElement = null;
+        this.stolenElement = null;
     }
 
     init() {
@@ -34,8 +36,14 @@ class ScoreManager {
             highScoreDiv.className = 'score-item';
             highScoreDiv.innerHTML = '<span class="score-label">High Score:</span> <span id="highScore" class="score-value">0</span>';
 
+            // Stolen by Keas
+            const stolenDiv = document.createElement('div');
+            stolenDiv.className = 'score-item stolen-item';
+            stolenDiv.innerHTML = '<span class="score-label">🦜 Stolen:</span> <span id="stolenScore" class="score-value">0</span>';
+
             scoreContainer.appendChild(currentScoreDiv);
             scoreContainer.appendChild(highScoreDiv);
+            scoreContainer.appendChild(stolenDiv);
 
             // Add to canvas wrapper
             const canvasWrapper = document.querySelector('.canvas-wrapper');
@@ -46,6 +54,7 @@ class ScoreManager {
 
         this.scoreElement = document.getElementById('currentScore');
         this.highScoreElement = document.getElementById('highScore');
+        this.stolenElement = document.getElementById('stolenScore');
     }
 
     addPoints(points) {
@@ -66,6 +75,22 @@ class ScoreManager {
         }
         if (this.highScoreElement) {
             this.highScoreElement.textContent = this.highScore;
+        }
+        if (this.stolenElement) {
+            this.stolenElement.textContent = this.foodsStolen;
+        }
+    }
+
+    incrementStolen() {
+        this.foodsStolen++;
+        this.updateDisplay();
+
+        // Flash effect for stolen food
+        if (this.stolenElement) {
+            this.stolenElement.parentElement.style.background = 'rgba(255, 152, 0, 0.95)';
+            setTimeout(() => {
+                this.stolenElement.parentElement.style.background = '';
+            }, 300);
         }
     }
 
@@ -99,6 +124,7 @@ class ScoreManager {
 
     reset() {
         this.currentScore = 0;
+        this.foodsStolen = 0;
         this.updateDisplay();
     }
 

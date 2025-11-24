@@ -56,6 +56,7 @@ class Background {
         this.scrollOffset = 0; // Vertical scroll position (accumulated over time)
         this.scrollSpeed = 0.05; // Pixels per millisecond - constant speed!
         this.maxScroll = 20000; // Maximum scroll for ground positioning
+        this.landedGroundY = null; // Store ground position when landing
         this.initClouds();
     }
 
@@ -116,8 +117,9 @@ class Background {
     }
 
     reset() {
-        // Reset scroll offset when starting a new timer
+        // Reset scroll offset and ground position when starting a new timer
         this.scrollOffset = 0;
+        this.landedGroundY = null;
     }
 
     update(deltaTime, totalDuration, percentComplete) {
@@ -151,30 +153,40 @@ class Background {
     }
 
     drawGround(ctx, percentComplete, isComplete) {
+        // Use display dimensions (not scaled canvas dimensions)
+        const rect = this.canvas.getBoundingClientRect();
+        const canvasHeight = rect.height;
+        const canvasWidth = rect.width;
+
         // Ground scrolls in from bottom and eventually fills the screen
-        const groundStartY = this.canvas.height; // Start off screen
+        const groundStartY = canvasHeight; // Start off screen
         const groundEndY = 0; // End at top (fully visible when landed)
 
         // Ground Y position based on progress
         let groundY = groundStartY - (percentComplete * (groundStartY - groundEndY));
 
-        // When complete, ground is at bottom of kiwi (center-ish)
+        // When landing, store the ground position and keep it there
         if (isComplete) {
-            groundY = this.canvas.height / 2 + 50; // Just below center
+            if (this.landedGroundY === null) {
+                // First time landing - store current position
+                this.landedGroundY = groundY;
+            }
+            // Use stored position to keep ground stable
+            groundY = this.landedGroundY;
         }
 
         // Only draw if ground is visible
-        if (groundY < this.canvas.height) {
-            const groundHeight = this.canvas.height - groundY + 100; // Extend below viewport
+        if (groundY < canvasHeight) {
+            const groundHeight = canvasHeight - groundY + 100; // Extend below viewport
 
             // Ground - grass
             ctx.fillStyle = '#7CB342';
-            ctx.fillRect(0, groundY, this.canvas.width, groundHeight);
+            ctx.fillRect(0, groundY, canvasWidth, groundHeight);
 
             // Ground details - darker grass patches
             ctx.fillStyle = '#689F38';
             ctx.beginPath();
-            for (let x = 0; x < this.canvas.width; x += 40) {
+            for (let x = 0; x < canvasWidth; x += 40) {
                 ctx.ellipse(x, groundY + 10, 20, 8, 0, 0, Math.PI * 2);
             }
             ctx.fill();
@@ -184,17 +196,17 @@ class Background {
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(0, groundY);
-            ctx.lineTo(this.canvas.width, groundY);
+            ctx.lineTo(canvasWidth, groundY);
             ctx.stroke();
 
             // Simple hills in background
             ctx.fillStyle = '#8BC34A';
             ctx.beginPath();
             ctx.moveTo(0, groundY);
-            ctx.quadraticCurveTo(this.canvas.width / 4, groundY - 40, this.canvas.width / 2, groundY);
-            ctx.quadraticCurveTo(3 * this.canvas.width / 4, groundY + 20, this.canvas.width, groundY - 20);
-            ctx.lineTo(this.canvas.width, this.canvas.height + 100);
-            ctx.lineTo(0, this.canvas.height + 100);
+            ctx.quadraticCurveTo(canvasWidth / 4, groundY - 40, canvasWidth / 2, groundY);
+            ctx.quadraticCurveTo(3 * canvasWidth / 4, groundY + 20, canvasWidth, groundY - 20);
+            ctx.lineTo(canvasWidth, canvasHeight + 100);
+            ctx.lineTo(0, canvasHeight + 100);
             ctx.closePath();
             ctx.fill();
         }

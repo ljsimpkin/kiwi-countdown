@@ -90,10 +90,11 @@ Instead of the kiwi falling down the screen, imagine the kiwi is actually descen
 ### Background Scrolling
 
 **Cloud Scrolling:**
-- Each cloud has an initial Y position
-- As `percentComplete` increases, clouds scroll upward
+- Each cloud has an initial Y position (starting below viewport)
+- As `percentComplete` increases, clouds scroll upward (bottom to top)
+- Simulates kiwi falling downward through the sky
 - Parallax effect: Faster clouds = closer = scroll more
-- Formula: `y = initialY + (scrollOffset * parallaxFactor)`
+- Formula: `y = initialY - (scrollOffset * parallaxFactor)` (negative for upward)
 
 **Ground Scrolling:**
 - Starts off-screen at bottom

@@ -31,8 +31,9 @@ class Cloud {
 
         // Update vertical position based on scroll offset
         // Different layers scroll at different speeds (parallax)
+        // NEGATIVE to make clouds scroll UP (bottom to top) as kiwi falls
         const parallaxFactor = this.speed / 25; // Clouds with higher speed scroll faster
-        this.y = this.initialY + (scrollOffset * parallaxFactor);
+        this.y = this.initialY - (scrollOffset * parallaxFactor);
     }
 
     draw(ctx, canvasHeight) {
@@ -67,24 +68,24 @@ class Background {
 
     initClouds() {
         // Create multiple clouds distributed vertically
-        // Start with clouds above the viewport so they scroll into view
+        // Start with clouds BELOW the viewport so they scroll UP into view
         const cloudData = [
-            // Layer 1 (far - slow)
-            { x: 100, y: -500, scale: 0.7, speed: 10 },
-            { x: 300, y: -200, scale: 0.8, speed: 12 },
-            { x: 500, y: -800, scale: 0.75, speed: 11 },
+            // Layer 1 (far - slow) - start far below
+            { x: 100, y: 500, scale: 0.7, speed: 10 },
+            { x: 300, y: 800, scale: 0.8, speed: 12 },
+            { x: 500, y: 1200, scale: 0.75, speed: 11 },
 
             // Layer 2 (medium)
-            { x: 150, y: -300, scale: 1.0, speed: 20 },
-            { x: 400, y: -600, scale: 0.9, speed: 18 },
-            { x: 600, y: -100, scale: 0.95, speed: 19 },
+            { x: 150, y: 600, scale: 1.0, speed: 20 },
+            { x: 400, y: 900, scale: 0.9, speed: 18 },
+            { x: 600, y: 1100, scale: 0.95, speed: 19 },
 
             // Layer 3 (near - fast)
-            { x: 200, y: -400, scale: 1.2, speed: 30 },
-            { x: 450, y: -700, scale: 1.1, speed: 28 },
-            { x: 650, y: -900, scale: 1.15, speed: 29 },
+            { x: 200, y: 700, scale: 1.2, speed: 30 },
+            { x: 450, y: 1000, scale: 1.1, speed: 28 },
+            { x: 650, y: 1300, scale: 1.15, speed: 29 },
 
-            // Initial visible clouds
+            // Initial visible clouds (near start)
             { x: 250, y: 100, scale: 0.9, speed: 15 },
             { x: 550, y: 150, scale: 1.0, speed: 22 },
         ];

@@ -197,30 +197,82 @@ class Renderer {
         this.ctx.save();
         this.ctx.globalAlpha = Math.min(1, this.landingMessageAlpha);
 
-        // Draw background box
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        this.ctx.strokeStyle = '#667eea';
-        this.ctx.lineWidth = 4;
-        const boxWidth = 300;
-        const boxHeight = 120;
+        // Pulsing animation
+        const pulseScale = 1 + Math.sin(Date.now() * 0.003) * 0.05;
+
+        // Draw background box with gradient
+        const boxWidth = 420;
+        const boxHeight = 180;
         const boxX = centerX - boxWidth / 2;
         const boxY = centerY - boxHeight / 2;
 
+        // Gradient background
+        const gradient = this.ctx.createLinearGradient(boxX, boxY, boxX, boxY + boxHeight);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+        gradient.addColorStop(1, 'rgba(240, 248, 255, 0.98)');
+        this.ctx.fillStyle = gradient;
+
+        // Border with NZ colors (black and white with slight blue tint)
+        this.ctx.strokeStyle = '#667eea';
+        this.ctx.lineWidth = 5;
+
         this.ctx.beginPath();
-        this.ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 15);
+        this.ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 20);
         this.ctx.fill();
         this.ctx.stroke();
 
-        // Draw text
-        this.ctx.fillStyle = '#333';
+        // Add subtle inner glow
+        this.ctx.strokeStyle = 'rgba(102, 126, 234, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.roundRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10, 15);
+        this.ctx.stroke();
+
+        // Draw decorative kiwi bird emojis in corners
+        this.ctx.font = '24px sans-serif';
+        this.ctx.fillText('🥝', boxX + 25, boxY + 25);
+        this.ctx.fillText('🥝', boxX + boxWidth - 25, boxY + 25);
+        this.ctx.fillText('🦜', boxX + 25, boxY + boxHeight - 25);
+        this.ctx.fillText('🦜', boxX + boxWidth - 25, boxY + boxHeight - 25);
+
+        // Main text with scaling
+        this.ctx.save();
+        this.ctx.translate(centerX, centerY - 35);
+        this.ctx.scale(pulseScale, pulseScale);
+
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
 
-        this.ctx.font = 'bold 32px sans-serif';
-        this.ctx.fillText("Time's up!", centerX, centerY - 15);
+        // "Time's up!" with gradient text
+        this.ctx.font = 'bold 38px sans-serif';
+        const textGradient = this.ctx.createLinearGradient(-100, -20, 100, 20);
+        textGradient.addColorStop(0, '#FF6B6B');
+        textGradient.addColorStop(0.5, '#667eea');
+        textGradient.addColorStop(1, '#4ECDC4');
+        this.ctx.fillStyle = textGradient;
+        this.ctx.fillText("Time's up!", 0, 0);
 
-        this.ctx.font = '20px sans-serif';
-        this.ctx.fillText('🎉 The kiwi has landed! 🎉', centerX, centerY + 20);
+        // Add text shadow for depth
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        this.ctx.shadowBlur = 4;
+        this.ctx.shadowOffsetX = 2;
+        this.ctx.shadowOffsetY = 2;
+
+        this.ctx.restore();
+
+        // "Welcome to NZ!" text
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.font = 'bold 28px sans-serif';
+        const welcomeGradient = this.ctx.createLinearGradient(centerX - 100, 0, centerX + 100, 0);
+        welcomeGradient.addColorStop(0, '#000000');
+        welcomeGradient.addColorStop(0.5, '#1a1a1a');
+        welcomeGradient.addColorStop(1, '#000000');
+        this.ctx.fillStyle = welcomeGradient;
+        this.ctx.fillText('Welcome to NZ!', centerX, centerY + 10);
+
+        // Celebratory emojis line
+        this.ctx.font = '26px sans-serif';
+        this.ctx.fillText('🎉 🥝 🌟 ✨ 🎊', centerX, centerY + 50);
 
         this.ctx.restore();
     }

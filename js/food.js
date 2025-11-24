@@ -49,8 +49,10 @@ class Food {
         this.bobOffset += this.bobSpeed * deltaTime;
 
         // Update Y position based on scroll offset (scroll upward like clouds)
-        // Use same scrolling as clouds to move with the world
-        this.y = this.initialY - scrollOffset;
+        // Only apply scrolling if scrollOffset is significant (timer is running)
+        if (scrollOffset > 10) {
+            this.y = this.initialY - scrollOffset;
+        }
     }
 
     draw(ctx) {
@@ -105,26 +107,28 @@ class FoodManager {
         this.canvas = canvas;
         this.foods = [];
         this.spawnTimer = 0;
-        this.spawnInterval = 3000; // Spawn food every 3 seconds
-        this.maxFoods = 8; // Maximum food items on screen
+        this.spawnInterval = 1500; // Spawn food every 1.5 seconds (faster!)
+        this.maxFoods = 15; // More food on screen at once
 
-        // Spawn initial food for testing
-        console.log('FoodManager initialized');
+        // Spawn initial food
         this.spawnInitialFood();
     }
 
     spawnInitialFood() {
-        // Spawn a few test foods at visible positions
+        // Spawn many foods at visible positions across the screen
         const rect = this.canvas.getBoundingClientRect();
-        console.log('Canvas dimensions:', rect.width, rect.height);
 
-        // Spawn foods at various Y positions to test visibility
-        for (let i = 0; i < 3; i++) {
-            const x = rect.width / 2 + (i - 1) * 100;
-            const y = rect.height / 4 + i * 100;
-            const food = new Food(x, y, i === 0 ? 'berry' : i === 1 ? 'worm' : 'apple');
+        // Spawn 8 foods distributed across the screen
+        for (let i = 0; i < 8; i++) {
+            const x = 80 + (rect.width - 160) * (i / 7); // Spread across width
+            const y = 100 + (rect.height - 200) * Math.random(); // Random height
+
+            // Cycle through food types
+            const types = ['berry', 'worm', 'apple'];
+            const type = types[i % 3];
+
+            const food = new Food(x, y, type);
             this.foods.push(food);
-            console.log(`Initial test food ${i}: x=${x}, y=${y}`);
         }
     }
 
@@ -158,11 +162,15 @@ class FoodManager {
         // Random X position with some padding from edges
         const x = 50 + Math.random() * (rect.width - 100);
 
-        // Spawn food ahead of the current scroll position
-        // Add scrollOffset to the Y position so it spawns in "world space"
-        // This way it will scroll into view from below as the world scrolls up
-        const spawnDistance = rect.height + 100 + Math.random() * 300;
-        const y = scrollOffset + spawnDistance;
+        let y;
+        if (scrollOffset > 10) {
+            // Timer is running - spawn ahead of scroll position
+            const spawnDistance = rect.height + 100 + Math.random() * 300;
+            y = scrollOffset + spawnDistance;
+        } else {
+            // No timer - spawn at random positions in viewport
+            y = 80 + Math.random() * (rect.height - 160);
+        }
 
         // Random food type (weighted distribution)
         const rand = Math.random();
@@ -177,14 +185,9 @@ class FoodManager {
 
         const food = new Food(x, y, type);
         this.foods.push(food);
-        console.log(`Spawned ${type} at x:${x.toFixed(0)}, initialY:${y.toFixed(0)}, scrollOffset:${scrollOffset.toFixed(0)}, foods:${this.foods.length}`);
     }
 
     draw(ctx) {
-        // Debug: Draw once per second instead of every frame
-        if (this.foods.length > 0 && Math.random() < 0.016) {
-            console.log(`Drawing ${this.foods.length} foods. First food Y: ${this.foods[0].y.toFixed(0)}`);
-        }
         this.foods.forEach(food => food.draw(ctx));
     }
 

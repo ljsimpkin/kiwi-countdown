@@ -9,10 +9,15 @@ class Renderer {
         this.background = new Background(canvas);
         this.kiwi = new Kiwi(canvas);
         this.parachute = new Parachute();
+        this.foodManager = new FoodManager(canvas);
+        this.scoreManager = new ScoreManager();
 
         this.lastFrameTime = performance.now();
         this.isLanding = false;
         this.landingMessageAlpha = 0;
+
+        // Initialize score display
+        this.scoreManager.init();
     }
 
     setupCanvas() {
@@ -32,6 +37,7 @@ class Renderer {
         this.setupCanvas();
         this.background = new Background(this.canvas);
         this.kiwi = new Kiwi(this.canvas);
+        this.foodManager = new FoodManager(this.canvas);
     }
 
     clear() {
@@ -53,6 +59,20 @@ class Renderer {
         // Update parachute
         this.parachute.update(deltaTime);
 
+        // Update food manager
+        this.foodManager.update(deltaTime, this.background.scrollOffset);
+
+        // Check for food collisions
+        const kiwiPos = this.kiwi.getAttachmentPoint();
+        const pointsEarned = this.foodManager.checkCollisions(
+            this.kiwi.x,
+            this.kiwi.y,
+            this.kiwi.bodyRadius
+        );
+        if (pointsEarned > 0) {
+            this.scoreManager.addPoints(pointsEarned);
+        }
+
         // Handle landing
         if (isComplete && !this.isLanding) {
             this.startLanding();
@@ -68,6 +88,9 @@ class Renderer {
 
         // Draw background with percentComplete and isComplete for ground positioning
         this.background.draw(this.ctx, totalDuration, percentComplete, isComplete);
+
+        // Draw food items
+        this.foodManager.draw(this.ctx);
 
         // Draw parachute (behind kiwi)
         const attachPoint = this.kiwi.getAttachmentPoint();

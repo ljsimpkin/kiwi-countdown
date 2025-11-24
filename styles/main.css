@@ -68,6 +68,56 @@ header h1 {
     text-align: center;
 }
 
+.score-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.score-item {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.score-label {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.score-value {
+    color: #667eea;
+    font-size: 1.1rem;
+    font-variant-numeric: tabular-nums;
+    min-width: 40px;
+    text-align: right;
+}
+
+.score-item.new-high-score {
+    animation: highScorePulse 1s ease;
+    background: rgba(255, 215, 0, 0.95);
+}
+
+@keyframes highScorePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
 .controls {
     background: rgba(255, 255, 255, 0.95);
     padding: 25px;
@@ -187,6 +237,26 @@ header h1 {
         font-size: 1.4rem;
         padding: 10px 20px;
         min-width: 150px;
+    }
+
+    .score-container {
+        right: 10px;
+        top: 15px;
+        gap: 6px;
+    }
+
+    .score-item {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    .score-label {
+        font-size: 0.75rem;
+    }
+
+    .score-value {
+        font-size: 0.95rem;
+        min-width: 30px;
     }
 
     .btn-small {

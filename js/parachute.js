@@ -96,24 +96,6 @@ class Parachute {
         ctx.fill();
         ctx.stroke();
 
-        // Draw parachute panels (decorative lines)
-        ctx.strokeStyle = '#CC5555';
-        ctx.lineWidth = 1.5;
-
-        for (let i = 1; i < 4; i++) {
-            const x = lerp(-this.chuteWidth / 2, this.chuteWidth / 2, i / 4);
-            ctx.beginPath();
-            ctx.moveTo(x, -this.chuteHeight / 2 + billow);
-            ctx.lineTo(x, this.chuteHeight / 2);
-            ctx.stroke();
-        }
-
-        // Draw center vent hole
-        ctx.fillStyle = '#CC5555';
-        ctx.beginPath();
-        ctx.arc(0, -this.chuteHeight / 2 + billow, 5, 0, Math.PI * 2);
-        ctx.fill();
-
         ctx.restore();
     }
 }

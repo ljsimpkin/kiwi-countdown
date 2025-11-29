@@ -28,6 +28,9 @@ class KiwiTimerApp {
     init() {
         this.setupEventListeners();
 
+        // Parse title from URL parameters
+        this.parseAndDisplayTitle();
+
         // Check for URL parameters first, before loading saved timer
         const urlDate = this.parseURLParameters();
         if (urlDate) {
@@ -41,6 +44,19 @@ class KiwiTimerApp {
 
         // Start render loop
         this.animate();
+    }
+
+    parseAndDisplayTitle() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const title = urlParams.get('title');
+
+        if (title) {
+            const customTitleElement = document.getElementById('custom-title');
+            if (customTitleElement) {
+                customTitleElement.textContent = decodeURIComponent(title);
+                customTitleElement.style.display = 'block';
+            }
+        }
     }
 
     setupEventListeners() {

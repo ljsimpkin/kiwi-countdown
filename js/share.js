@@ -74,7 +74,17 @@ class ShareManager {
 
             // Build the shareable URL
             const baseURL = window.location.origin + window.location.pathname;
-            this.currentURL = `${baseURL}?time=${encodeURIComponent(isoString)}`;
+            const params = new URLSearchParams();
+            params.set('time', isoString);
+
+            // Include title if one exists in current URL
+            const currentParams = new URLSearchParams(window.location.search);
+            const title = currentParams.get('title');
+            if (title) {
+                params.set('title', title);
+            }
+
+            this.currentURL = `${baseURL}?${params.toString()}`;
         }
 
         if (this.urlInput) {

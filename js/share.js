@@ -3,6 +3,7 @@ class ShareManager {
         this.modal = null;
         this.shareButton = null;
         this.urlInput = null;
+        this.titleInput = null;
         this.copyButton = null;
         this.qrContainer = null;
         this.currentURL = '';
@@ -12,6 +13,7 @@ class ShareManager {
         this.modal = document.getElementById('share-modal');
         this.shareButton = document.getElementById('share-button');
         this.urlInput = document.getElementById('share-url');
+        this.titleInput = document.getElementById('share-title');
         this.copyButton = document.getElementById('copy-button');
         this.qrContainer = document.getElementById('qr-code');
 
@@ -34,6 +36,14 @@ class ShareManager {
         this.copyButton.addEventListener('click', () => {
             this.copyToClipboard();
         });
+
+        // Title input - update URL as user types
+        if (this.titleInput) {
+            this.titleInput.addEventListener('input', () => {
+                this.updateURL();
+                this.generateQRCode();
+            });
+        }
 
         // Close on backdrop click
         this.modal.addEventListener('click', (e) => {
@@ -77,11 +87,9 @@ class ShareManager {
             const params = new URLSearchParams();
             params.set('time', isoString);
 
-            // Include title if one exists in current URL
-            const currentParams = new URLSearchParams(window.location.search);
-            const title = currentParams.get('title');
-            if (title) {
-                params.set('title', title);
+            // Include title from the title input field if one is entered
+            if (this.titleInput && this.titleInput.value.trim()) {
+                params.set('title', this.titleInput.value.trim());
             }
 
             this.currentURL = `${baseURL}?${params.toString()}`;
@@ -93,6 +101,13 @@ class ShareManager {
     }
 
     openModal() {
+        // Pre-fill title input with existing title from URL if present
+        const currentParams = new URLSearchParams(window.location.search);
+        const existingTitle = currentParams.get('title');
+        if (this.titleInput && existingTitle) {
+            this.titleInput.value = decodeURIComponent(existingTitle);
+        }
+
         this.updateURL();
         this.generateQRCode();
         this.modal.classList.add('show');

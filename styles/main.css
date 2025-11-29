@@ -450,6 +450,29 @@ header h1 {
     color: #333;
 }
 
+.share-title-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: white;
+    color: #333;
+    transition: border-color 0.2s ease;
+}
+
+.share-title-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.share-title-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
 .share-url {
     width: 100%;
     padding: 12px;
@@ -516,6 +539,11 @@ header h1 {
 
     .modal-content h2 {
         font-size: 1.5rem;
+    }
+
+    .share-title-input {
+        font-size: 0.9rem;
+        padding: 10px;
     }
 
     .share-url {

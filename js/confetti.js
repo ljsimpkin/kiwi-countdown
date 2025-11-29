@@ -96,12 +96,27 @@ class ConfettiParticle {
 class ConfettiManager {
     constructor(canvas) {
         this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
         this.particles = [];
         this.active = false;
         this.burstTimer = 0;
         this.burstInterval = 150; // Burst every 150ms (faster!)
         this.burstCount = 0;
         this.maxBursts = 40; // 40 bursts total (6 seconds of confetti!)
+
+        // Setup full-screen canvas
+        this.setupCanvas();
+    }
+
+    setupCanvas() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
+        // Update on window resize
+        window.addEventListener('resize', () => {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+        });
     }
 
     activate(kiwiX, kiwiY) {
@@ -110,15 +125,20 @@ class ConfettiManager {
         this.burstCount = 0;
         this.particles = [];
 
-        const rect = this.canvas.getBoundingClientRect();
+        // Show the overlay canvas
+        this.canvas.classList.add('active');
+
+        // Use full viewport dimensions
+        const width = window.innerWidth;
+        const height = window.innerHeight;
         this.burstLocations = [];
 
-        // Pre-generate random burst locations - including outside canvas!
-        const margin = 200; // Allow spawning 200px outside canvas
+        // Pre-generate random burst locations across entire viewport!
+        const margin = 200; // Allow spawning outside viewport
         for (let i = 0; i < this.maxBursts; i++) {
             this.burstLocations.push({
-                x: -margin + Math.random() * (rect.width + margin * 2),
-                y: -margin + Math.random() * (rect.height + margin * 2)
+                x: -margin + Math.random() * (width + margin * 2),
+                y: -margin + Math.random() * (height + margin * 2)
             });
         }
 
@@ -127,7 +147,9 @@ class ConfettiManager {
     }
 
     burst(x, y) {
-        const rect = this.canvas.getBoundingClientRect();
+        // Use full viewport dimensions
+        const width = window.innerWidth;
+        const height = window.innerHeight;
 
         // Create 40-60 particles per burst (massive explosion!)
         const particleCount = 40 + Math.floor(Math.random() * 21);
@@ -136,8 +158,8 @@ class ConfettiManager {
             const particle = new ConfettiParticle(
                 x + (Math.random() - 0.5) * 150, // Wider spread
                 y,
-                rect.width,
-                rect.height
+                width,
+                height
             );
             this.particles.push(particle);
         }
@@ -167,13 +189,19 @@ class ConfettiManager {
         // Deactivate when all bursts done and particles gone
         if (this.burstCount >= this.maxBursts && this.particles.length === 0) {
             this.active = false;
+            // Hide the overlay canvas
+            this.canvas.classList.remove('active');
         }
     }
 
-    draw(ctx) {
+    draw() {
         if (!this.active) return;
 
-        this.particles.forEach(particle => particle.draw(ctx));
+        // Clear the overlay canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw all particles on overlay
+        this.particles.forEach(particle => particle.draw(this.ctx));
     }
 
     reset() {

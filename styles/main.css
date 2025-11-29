@@ -334,6 +334,22 @@ header h1 {
     }
 }
 
+/* Full-Screen Confetti Overlay */
+.confetti-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 9999; /* On top of everything */
+    display: none; /* Hidden by default */
+}
+
+.confetti-overlay.active {
+    display: block;
+}
+
 /* Share Button */
 .share-button {
     position: fixed;

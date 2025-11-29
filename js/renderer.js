@@ -14,7 +14,11 @@ class Renderer {
         this.kiwiFriends = null; // Created when landing
         this.soundManager = new SoundManager();
         this.weatherManager = new WeatherManager(canvas);
-        this.confettiManager = new ConfettiManager(canvas);
+
+        // Use overlay canvas for confetti (covers entire viewport)
+        const overlayCanvas = document.getElementById('confettiCanvas');
+        this.confettiManager = new ConfettiManager(overlayCanvas);
+
         this.keaManager = new KeaManager(canvas);
 
         this.lastFrameTime = performance.now();
@@ -139,8 +143,8 @@ class Renderer {
         // Draw kiwi
         this.kiwi.draw(this.ctx);
 
-        // Draw confetti (on top of everything)
-        this.confettiManager.draw(this.ctx);
+        // Draw confetti on its own overlay canvas (covers full viewport)
+        this.confettiManager.draw();
 
         // Draw landing message
         if (this.isLanding && this.landingMessageAlpha > 0) {

@@ -113,11 +113,12 @@ class ConfettiManager {
         const rect = this.canvas.getBoundingClientRect();
         this.burstLocations = [];
 
-        // Pre-generate random burst locations across the entire screen
+        // Pre-generate random burst locations - including outside canvas!
+        const margin = 200; // Allow spawning 200px outside canvas
         for (let i = 0; i < this.maxBursts; i++) {
             this.burstLocations.push({
-                x: rect.width * 0.1 + Math.random() * rect.width * 0.8,
-                y: rect.height * 0.2 + Math.random() * rect.height * 0.6
+                x: -margin + Math.random() * (rect.width + margin * 2),
+                y: -margin + Math.random() * (rect.height + margin * 2)
             });
         }
 

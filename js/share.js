@@ -76,16 +76,32 @@ class ShareManager {
             // Fallback to current URL if no date is set
             this.currentURL = window.location.href;
         } else {
-            // Parse the datetime-local input value
-            const targetDate = new Date(targetDateTimeInput.value);
+            // Use the datetime-local value directly (already in correct format)
+            // datetime-local format: "YYYY-MM-DDTHH:mm" (local time, no timezone conversion!)
+            const localDateTime = targetDateTimeInput.value;
 
-            // Format as ISO string (e.g., "2025-12-04T06:30:00")
-            const isoString = targetDate.toISOString().slice(0, 19);
+            // Add seconds if not present
+            const timeString = localDateTime.includes(':') && localDateTime.split(':').length === 2
+                ? localDateTime + ':00'
+                : localDateTime;
+
+            // Get user's current timezone offset
+            // getTimezoneOffset() returns minutes OPPOSITE of GMT offset
+            // (e.g., GMT+13 returns -780, so we need to negate and convert to hours)
+            const offsetMinutes = -new Date().getTimezoneOffset();
+            const offsetHours = Math.floor(offsetMinutes / 60);
+            const offsetMins = Math.abs(offsetMinutes % 60);
+
+            // Format as "+13" or "-5" or "+5:30"
+            const timezoneString = offsetMins === 0
+                ? `${offsetHours >= 0 ? '+' : ''}${offsetHours}`
+                : `${offsetHours >= 0 ? '+' : ''}${offsetHours}:${String(offsetMins).padStart(2, '0')}`;
 
             // Build the shareable URL
             const baseURL = window.location.origin + window.location.pathname;
             const params = new URLSearchParams();
-            params.set('time', isoString);
+            params.set('time', timeString);
+            params.set('tz', timezoneString);
 
             // Include title from the title input field if one is entered
             if (this.titleInput && this.titleInput.value.trim()) {

@@ -261,6 +261,8 @@ class Renderer {
         this.ctx.restore();
 
         // "Welcome to NZ!" text
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
         this.ctx.shadowColor = 'transparent';
         this.ctx.font = 'bold 28px sans-serif';
         const welcomeGradient = this.ctx.createLinearGradient(centerX - 100, 0, centerX + 100, 0);

@@ -192,7 +192,7 @@ class Renderer {
     drawLandingMessage() {
         const dpr = window.devicePixelRatio || 1;
         const centerX = (this.canvas.width / dpr) / 2;
-        const centerY = (this.canvas.height / dpr) / 2;
+        const canvasHeight = (this.canvas.height / dpr);
 
         this.ctx.save();
         this.ctx.globalAlpha = Math.min(1, this.landingMessageAlpha);
@@ -204,7 +204,7 @@ class Renderer {
         const boxWidth = 420;
         const boxHeight = 180;
         const boxX = centerX - boxWidth / 2;
-        const boxY = centerY - boxHeight / 2;
+        const boxY = canvasHeight - boxHeight - 40; // Position near bottom
 
         // Gradient background
         const gradient = this.ctx.createLinearGradient(boxX, boxY, boxX, boxY + boxHeight);
@@ -236,8 +236,9 @@ class Renderer {
         this.ctx.fillText('🦜', boxX + boxWidth - 25, boxY + boxHeight - 25);
 
         // Main text with scaling
+        const messageY = boxY + boxHeight / 2;
         this.ctx.save();
-        this.ctx.translate(centerX, centerY - 35);
+        this.ctx.translate(centerX, messageY - 35);
         this.ctx.scale(pulseScale, pulseScale);
 
         this.ctx.textAlign = 'center';
@@ -270,11 +271,11 @@ class Renderer {
         welcomeGradient.addColorStop(0.5, '#1a1a1a');
         welcomeGradient.addColorStop(1, '#000000');
         this.ctx.fillStyle = welcomeGradient;
-        this.ctx.fillText('Welcome to NZ!', centerX, centerY + 10);
+        this.ctx.fillText('Welcome to NZ!', centerX, messageY + 10);
 
         // Celebratory emojis line
         this.ctx.font = '26px sans-serif';
-        this.ctx.fillText('🎉 🥝 🌟 ✨ 🎊', centerX, centerY + 50);
+        this.ctx.fillText('🎉 🥝 🌟 ✨ 🎊', centerX, messageY + 50);
 
         this.ctx.restore();
     }

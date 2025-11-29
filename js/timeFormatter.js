@@ -3,7 +3,7 @@
 class TimeFormatter {
     static format(milliseconds) {
         if (milliseconds <= 0) {
-            return "Time's up! Welcome to NZ!";
+            return "0s";
         }
 
         const seconds = Math.floor(milliseconds / 1000);

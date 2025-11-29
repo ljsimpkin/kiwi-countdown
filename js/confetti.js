@@ -99,9 +99,9 @@ class ConfettiManager {
         this.particles = [];
         this.active = false;
         this.burstTimer = 0;
-        this.burstInterval = 200; // Burst every 200ms
+        this.burstInterval = 150; // Burst every 150ms (faster!)
         this.burstCount = 0;
-        this.maxBursts = 15; // 15 bursts total (3 seconds)
+        this.maxBursts = 40; // 40 bursts total (6 seconds of confetti!)
     }
 
     activate(kiwiX, kiwiY) {
@@ -110,19 +110,30 @@ class ConfettiManager {
         this.burstCount = 0;
         this.particles = [];
 
-        // Initial burst
+        const rect = this.canvas.getBoundingClientRect();
+        this.burstLocations = [];
+
+        // Pre-generate random burst locations across the entire screen
+        for (let i = 0; i < this.maxBursts; i++) {
+            this.burstLocations.push({
+                x: rect.width * 0.1 + Math.random() * rect.width * 0.8,
+                y: rect.height * 0.2 + Math.random() * rect.height * 0.6
+            });
+        }
+
+        // Initial burst at kiwi position
         this.burst(kiwiX, kiwiY);
     }
 
     burst(x, y) {
         const rect = this.canvas.getBoundingClientRect();
 
-        // Create 15-20 particles per burst
-        const particleCount = 15 + Math.floor(Math.random() * 6);
+        // Create 40-60 particles per burst (massive explosion!)
+        const particleCount = 40 + Math.floor(Math.random() * 21);
 
         for (let i = 0; i < particleCount; i++) {
             const particle = new ConfettiParticle(
-                x + (Math.random() - 0.5) * 100, // Spread around source
+                x + (Math.random() - 0.5) * 150, // Wider spread
                 y,
                 rect.width,
                 rect.height
@@ -134,11 +145,13 @@ class ConfettiManager {
     update(deltaTime, kiwiX, kiwiY) {
         if (!this.active) return;
 
-        // Create periodic bursts
+        // Create periodic bursts at random locations
         if (this.burstCount < this.maxBursts) {
             this.burstTimer += deltaTime;
             if (this.burstTimer >= this.burstInterval) {
-                this.burst(kiwiX, kiwiY);
+                // Use pre-generated random location
+                const location = this.burstLocations[this.burstCount];
+                this.burst(location.x, location.y);
                 this.burstTimer = 0;
                 this.burstCount++;
             }

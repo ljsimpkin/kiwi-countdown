@@ -122,12 +122,7 @@ class KiwiTimerApp {
                 return null;
             }
 
-            // Check if date is in the future
-            if (targetDate <= new Date()) {
-                console.error('Date in URL parameter is in the past:', dateParam);
-                return null;
-            }
-
+            // Allow past dates - they will show the completed state
             return targetDate;
         } catch (error) {
             console.error('Error parsing date from URL:', error);
@@ -352,25 +347,32 @@ class KiwiTimerApp {
         const targetDate = new Date(targetDateValue);
         const now = new Date();
 
-        if (targetDate <= now) {
-            alert('Please select a future date and time');
-            return;
-        }
-
-        // Create new timer
+        // Create new timer (even if in the past)
         this.timer = new CountdownTimer(targetDate);
-        this.isRunning = true;
         this.pauseBtn.disabled = false;
         this.startBtn.textContent = 'Restart';
 
         // Reset renderer
         this.renderer = new Renderer(this.canvas);
 
-        // Activate kea antagonists
-        this.renderer.keaManager.activate();
+        if (targetDate <= now) {
+            // Date is in the past - show completed state
+            this.isRunning = false;
+            this.timeDisplay.textContent = TimeFormatter.format(0);
 
-        // Save to storage
-        Storage.save(targetDate);
+            // Set renderer to completed state (100% complete)
+            this.renderer.update(1.0, 0, true);
+            this.renderer.draw(0, 1.0, true);
+        } else {
+            // Date is in the future - start countdown normally
+            this.isRunning = true;
+
+            // Activate kea antagonists
+            this.renderer.keaManager.activate();
+
+            // Save to storage
+            Storage.save(targetDate);
+        }
     }
 
     togglePause() {

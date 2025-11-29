@@ -484,4 +484,8 @@ class KiwiTimerApp {
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new KiwiTimerApp();
+
+    // Initialize share functionality
+    const shareManager = new ShareManager();
+    shareManager.init();
 });

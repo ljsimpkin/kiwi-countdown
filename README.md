@@ -1,26 +1,42 @@
-# 🥝 Kiwi Parachute Drop - Dynamic Countdown Timer
+# 🪂 Kiwichute - The Most Delightful Countdown Timer
 
 A delightful countdown timer that visualizes time as a cute kiwi bird parachuting from the sky. Watch as the kiwi descends smoothly toward the ground as your deadline approaches!
+
+## ✨ Try It Now!
+
+**[🚀 Launch Kiwichute →](https://liamsimpkin.com/kiwichute/)**
+
+Experience the magic yourself! Watch a kiwi parachute through clouds, dodge mischievous keas, and land in New Zealand with fireworks. Whether you're counting down to your next coffee break or a major deadline, Kiwichute makes every second entertaining.
+
+Try these quick links:
+- [5-second demo](https://liamsimpkin.com/kiwichute/?time=5&tz=0) - See the landing celebration!
+- [New Year countdown](https://liamsimpkin.com/kiwichute/?time=2026-01-01T00:00:00) - Ring in the new year with a kiwi!
 
 ## Features
 
 ### Core Functionality
 - ⏰ **Dynamic target date/time countdown** - Works for any duration from seconds to days
 - 🪂 **Smooth parachute animation** - Gentle descent with realistic swaying and billowing
-- 🎨 **Beautiful sky background** - Gradient sky with parallax cloud layers
+- 🎨 **Beautiful sky background** - Dynamic day/night cycle with parallax cloud layers
 - 💾 **Persistent state** - Resume your countdown after closing the tab
 - 📱 **Fully responsive** - Works on desktop and mobile devices
-- 🎯 **Quick presets** - Fast setup with 5 min, 1 hour, tomorrow 9 AM, and 3-day buttons
+- 🎯 **Quick presets** - Fast setup with 5 seconds, 5 min, 1 hour, tomorrow 9 AM, and 3-day buttons
 - ⚡ **Performance optimized** - Adaptive frame rate based on countdown duration
+- 🌍 **Timezone support** - Set countdowns in any timezone via URL parameters
 
-### Visual Elements
+### Visual Elements & Effects
 - **Vertical scrolling animation** - Kiwi stays centered while the world scrolls past
-- Animated kiwi bird with swaying motion (fixed at center)
-- Billowing parachute canopy
-- Multiple cloud layers with vertical parallax scrolling
-- Ground that scrolls into view as time progresses
-- Landing animation with bounce effect (in place)
-- Celebration message when time's up
+- 🥝 **Animated kiwi bird** with swaying motion and adorable details
+- 🪂 **Billowing parachute canopy** that collapses on landing
+- ☁️ **Multiple cloud layers** with vertical parallax scrolling
+- 🌅 **Day/night cycle** - Watch the sky transition from dawn to dusk to starry night
+- 🌧️ **Dynamic weather** - Rain, snow, or clear skies (toggle to your preference)
+- 🍎 **Collectible food items** - Catch berries, worms, and apples for points
+- 🦜 **Mischievous keas** - Dodge these cheeky birds trying to steal your snacks!
+- 🎆 **Explosive fireworks** - Spectacular confetti celebration when time's up
+- 🥝 **Kiwi friends party** - Other kiwis join the celebration at landing
+- 🔊 **Procedural sound effects** - Dynamic audio for food collection and landing
+- 🏆 **High score tracking** - Beat your personal best!
 
 ## How to Use
 
@@ -36,20 +52,26 @@ A delightful countdown timer that visualizes time as a cute kiwi bird parachutin
 - **Tomorrow 9 AM** - Set up your morning reminder
 - **In 3 days** - Track upcoming events
 
-### URL Parameters (NEW!)
-You can now set the target date directly in the URL - perfect for sharing countdowns!
+### URL Parameters
+Set the target date directly in the URL - perfect for sharing countdowns!
 
-**Example:**
+**Examples:**
 ```
-index.html?date=6:30am 3rd december
+?time=2025-12-04T06:30:00&tz=13          # New Zealand time (GMT+13)
+?date=6:30am 3rd december                # Natural language
+?time=2025-12-03T06:30:00+13:00          # ISO 8601 with timezone
 ```
 
 **Supported formats:**
 - Natural language: `6:30am 3rd december`, `december 3 2025 6:30am`
 - ISO 8601: `2025-12-03T06:30:00`
+- ISO with timezone: `2025-12-03T06:30:00+13:00`
 - Alternative params: `?target=...` or `?time=...`
 
-See [QUICKSTART.md](QUICKSTART.md) for full documentation on URL parameters.
+**Timezone parameter:**
+- `&tz=13` or `&timezone=13` - Offset in hours from UTC
+- `&tz=GMT+13` - GMT notation
+- Without timezone, treated as local time
 
 ## Project Structure
 

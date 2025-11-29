@@ -129,17 +129,20 @@ class FoodManager {
         }
     }
 
-    update(deltaTime) {
-        // Update spawn timer
-        this.spawnTimer += deltaTime;
+    update(deltaTime, isComplete = false) {
+        // Only spawn new food when timer is running
+        if (!isComplete) {
+            // Update spawn timer
+            this.spawnTimer += deltaTime;
 
-        // Spawn new food if needed
-        if (this.spawnTimer >= this.spawnInterval && this.foods.length < this.maxFoods) {
-            this.spawnFood();
-            this.spawnTimer = 0;
+            // Spawn new food if needed
+            if (this.spawnTimer >= this.spawnInterval && this.foods.length < this.maxFoods) {
+                this.spawnFood();
+                this.spawnTimer = 0;
+            }
         }
 
-        // Update all foods
+        // Update all foods (keep them moving even after completion)
         this.foods.forEach(food => food.update(deltaTime));
 
         // Remove collected foods

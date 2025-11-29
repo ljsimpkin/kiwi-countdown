@@ -70,11 +70,12 @@ class Renderer {
         // Update parachute
         this.parachute.update(deltaTime);
 
-        // Update food manager
-        this.foodManager.update(deltaTime);
+        // Update food manager (existing food keeps moving even when complete)
+        this.foodManager.update(deltaTime, isComplete);
 
-        // Update kea manager (keas try to steal food!)
+        // Only update keas and check collisions when timer is running
         if (!isComplete) {
+            // Update kea manager (keas try to steal food!)
             this.keaManager.update(
                 deltaTime,
                 this.foodManager.foods,
@@ -83,17 +84,17 @@ class Renderer {
                 percentComplete,
                 () => this.scoreManager.incrementStolen()
             );
-        }
 
-        // Check for food collisions
-        const pointsEarned = this.foodManager.checkCollisions(
-            this.kiwi.x,
-            this.kiwi.y,
-            this.kiwi.bodyRadius
-        );
-        if (pointsEarned > 0) {
-            this.scoreManager.addPoints(pointsEarned);
-            this.soundManager.play('foodCollect');
+            // Check for food collisions
+            const pointsEarned = this.foodManager.checkCollisions(
+                this.kiwi.x,
+                this.kiwi.y,
+                this.kiwi.bodyRadius
+            );
+            if (pointsEarned > 0) {
+                this.scoreManager.addPoints(pointsEarned);
+                this.soundManager.play('foodCollect');
+            }
         }
 
         // Handle landing

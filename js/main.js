@@ -461,6 +461,13 @@ class KiwiTimerApp {
                 this.update();
                 this.lastUpdateTime = currentTime;
             }
+        } else if (this.timer && !this.isRunning) {
+            // Timer complete - keep animating landing sequence at 60 FPS
+            const frameInterval = 1000 / 60;
+            if (currentTime - this.lastUpdateTime >= frameInterval) {
+                this.update();
+                this.lastUpdateTime = currentTime;
+            }
         } else if (!this.timer) {
             // Update and draw scene even when no timer (for food spawning, kiwi movement, etc.)
             const frameInterval = 1000 / 60; // 60 FPS
